@@ -1,21 +1,89 @@
 :root {
-    --primary-color: #1a5f7a;
-    --secondary-color: #159895;
-    --accent-color: #57c5b6;
-    --bg-gradient: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    --bs-indigo: #675aa9;
+    --bs-purple: #6658dd;
+    --bs-red: #f86262;
+    --bs-orange: #fd7e14;
+    --bs-yellow: #fcc015;
+    --bs-green: #44cf9c;
+    --bs-teal: #02a8b5;
+    --bs-cyan: #43bee1;
+    --bs-white: #fff;
+    --bs-gray: #98a6ad;
+    --bs-gray-dark: #343a40;
+    --bs-gray-100: #f3f7f9;
+    --bs-gray-200: #f7f7f7;
+    --bs-gray-300: #dee2e6;
+    --bs-gray-400: #ced4da;
+    --bs-gray-500: #adb5bd;
+    --bs-gray-600: #98a6ad;
+    --bs-gray-700: #6c757d;
+    --bs-gray-800: #343a40;
+    --bs-gray-900: #323a46;
+    --bs-primary: #3283f6;
+    --bs-secondary: #6c757d;
+    --bs-success: #44cf9c;
+    --bs-info: #43bee1;
+    --bs-warning: #fcc015;
+    --bs-danger: #f86262;
+    --bs-light: #f3f7f9;
+    --bs-dark: #323a46;
+    --bs-pink: #f672a7;
+    --bs-blue: #6658dd;
+    --bs-primary-rgb: 50, 131, 246;
+    --bs-secondary-rgb: 108, 117, 125;
+    --bs-success-rgb: 68, 207, 156;
+    --bs-info-rgb: 67, 190, 225;
+    --bs-warning-rgb: 252, 192, 21;
+    --bs-danger-rgb: 248, 98, 98;
+    --bs-light-rgb: 243, 247, 249;
+    --bs-dark-rgb: 50, 58, 70;
+    --bs-pink-rgb: 246, 114, 167;
+    --bs-blue-rgb: 102, 88, 221;
+    --bs-white-rgb: 255, 255, 255;
+    --bs-black-rgb: 0, 0, 0;
+    --bs-body-rgb: 108, 117, 125;
+    --bs-font-sans-serif: "Nunito", sans-serif;
+    --bs-font-monospace: SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+    --bs-gradient: linear-gradient(180deg, rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0));
+    --bs-body-font-family: Nunito, sans-serif;
+    --bs-body-font-size: 0.875rem;
+    --bs-body-font-weight: 400;
+    --bs-body-line-height: 1.5;
+    --bs-body-color: #6c757d;
+    --bs-body-bg: #f5f6f9;
+
+    /* Map old vars to new system to prevent breaking existing styles that rely on them */
+    --primary-color: var(--bs-primary);
+    --secondary-color: var(--bs-green);
+    --accent-color: var(--bs-teal);
+    --bg-gradient: var(--bs-body-bg);
+    /* User wanted a solid color or specific background, but let's use the var */
     --glass-bg: rgba(255, 255, 255, 0.95);
     --shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
 }
 
 body {
-    font-family: 'Tajawal', sans-serif;
-    background: var(--bg-gradient);
+    box-sizing: border-box;
     margin: 0;
-    padding: 0;
-    min-height: 100vh;
-    color: #333;
+    font-family: var(--bs-body-font-family);
+    font-size: var(--bs-body-font-size);
+    font-weight: var(--bs-body-font-weight);
+    line-height: var(--bs-body-line-height);
+    color: var(--bs-body-color);
+    text-align: var(--bs-body-text-align, right);
+    /* Defaulting to right for Arabic */
+    -webkit-text-size-adjust: 100%;
+    -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+    padding-left: 0px !important;
+    padding-right: 0px !important;
+    background: #cfd8dc;
+    /* User specified this specific background */
+    overflow-x: hidden;
+    padding-bottom: 80px;
+    user-select: initial !important;
     display: flex;
     flex-direction: column;
+    min-height: 100vh;
 }
 
 /* --- Login Screen (Glassmorphism) --- */
@@ -45,16 +113,23 @@ body {
 }
 
 .login-card h2 {
-    margin: 0 0 10px;
+    margin: 10px 0 5px;
     color: var(--primary-color);
     font-weight: 800;
 }
 
-.login-card h3 {
-    margin: 0 0 30px;
+.login-card h3,
+.subtitle {
+    margin: 0 0 25px;
     color: #666;
     font-weight: 500;
     font-size: 1.1rem;
+}
+
+.logo {
+    width: 80px;
+    height: auto;
+    margin-bottom: 10px;
 }
 
 input,
@@ -239,9 +314,9 @@ table {
 
 th,
 td {
-    border: 1px solid #c0c0c0;
+    border: 1px solid #555;
+    /* Darker border */
     padding: 6px 4px;
-    /* Increased vertical padding */
     text-align: center;
 }
 
@@ -249,13 +324,6 @@ th {
     background-color: #f8f9fa;
     color: var(--primary-color);
     font-weight: 700;
-}
-
-/* Column Widths Optimization */
-th:nth-child(1),
-td:nth-child(1) {
-    width: 25%;
-    /* Slightly reduced */
 }
 
 /* Inputs inside tables */
@@ -343,6 +411,117 @@ input::-webkit-inner-spin-button {
     display: none;
 }
 
+/* Official Admin Table Styles (Scoped) */
+.admin-table-official {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+    direction: rtl;
+    background: white;
+    table-layout: fixed;
+    border: 2px solid #000;
+}
+
+.admin-table-official th,
+.admin-table-official td {
+    border: 1px solid #000;
+    padding: 4px 2px;
+    text-align: center;
+    vertical-align: middle;
+    font-size: 13px;
+    height: 30px;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    color: #000;
+}
+
+/* First Column: Type */
+.admin-table-official th:first-child,
+.admin-table-official td:first-child {
+    width: 12%;
+    background-color: #f8f9fa;
+}
+
+/* Second Column: Total */
+.admin-table-official th:nth-child(2),
+.admin-table-official td:nth-child(2) {
+    width: 8%;
+}
+
+.admin-table-official thead tr:first-child th {
+    background-color: #f0f0f0;
+    /* Light Grey Header */
+    font-weight: bold;
+}
+
+.admin-sheet-container {
+    padding: 15px;
+    background: white;
+    border: 1px solid #ddd;
+    margin-bottom: 30px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+/* Header & Footer Containers (Hidden by default, shown in Print or Admin Report) */
+.print-header-container,
+.print-footer-container {
+    display: none;
+    /* Hidden globally, shown in specific contexts */
+}
+
+/* For Admin Report Preview on Screen: Show Headers */
+#admin-view-reports .print-header-container,
+#admin-view-reports .print-footer-container {
+    display: flex;
+}
+
+/* Style the Header Elements */
+.print-header-container {
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 3px double #000;
+    padding-bottom: 10px;
+    margin-bottom: 20px;
+}
+
+.ph-right,
+.ph-left {
+    width: 30%;
+    text-align: center;
+    font-weight: bold;
+    font-size: 9pt;
+}
+
+.ph-center {
+    width: 40%;
+    text-align: center;
+}
+
+.ph-center h2 {
+    font-size: 14pt;
+    margin: 5px 0;
+    border: 2px solid #000;
+    padding: 5px 15px;
+    display: inline-block;
+    border-radius: 5px;
+}
+
+/* Style the Footer Elements */
+.print-footer-container {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 30px;
+    padding-top: 10px;
+}
+
+.signature-block {
+    width: 40%;
+    text-align: center;
+    font-weight: bold;
+    font-size: 10pt;
+}
+
 /* Animations */
 @keyframes fadeInDown {
     from {
@@ -385,8 +564,6 @@ input::-webkit-inner-spin-button {
 }
 
 /* --- RESPONSIVE DESIGN (MOBILE & TABLET) --- */
-
-/* Tablet (portrait and landscape) */
 @media screen and (max-width: 1024px) {
     body {
         font-size: 15px;
@@ -416,7 +593,6 @@ input::-webkit-inner-spin-button {
     }
 }
 
-/* Mobile (phones) */
 @media screen and (max-width: 768px) {
     body {
         font-size: 14px;
@@ -442,13 +618,11 @@ input::-webkit-inner-spin-button {
         font-size: 0.95rem;
     }
 
-    /* Better touch targets for inputs */
     input,
     select,
     button {
         padding: 14px;
         font-size: 16px;
-        /* Prevents zoom on iOS */
         margin: 8px 0;
     }
 
@@ -484,25 +658,21 @@ input::-webkit-inner-spin-button {
 
     .tabs button {
         flex: 1 1 45%;
-        /* 2 buttons per row */
         font-size: 13px;
         padding: 10px 8px;
         margin: 3px;
         min-width: 0;
     }
 
-    /* Admin specific mobile tweaks */
     #admin-dashboard-screen .control-panel div[style*="justify-content: space-between"] {
         flex-direction: column;
     }
 
     #admin-view-status>div[style*="display: flex"] {
         flex-direction: column;
-        /* Stack lists vertically */
         gap: 15px;
     }
 
-    /* Make lists scrollable but visible */
     #list-submitted,
     #list-missing {
         max-height: 250px !important;
@@ -517,17 +687,14 @@ input::-webkit-inner-spin-button {
         font-size: 1rem;
     }
 
-    /* Table improvements for mobile */
     .table-container {
         padding: 10px;
         overflow-x: auto;
         -webkit-overflow-scrolling: touch;
-        /* Smooth scrolling on iOS */
     }
 
     table {
         min-width: 600px;
-        /* Force horizontal scroll for wide tables */
         font-size: 12px;
     }
 
@@ -542,24 +709,20 @@ input::-webkit-inner-spin-button {
         max-width: 65px;
         padding: 8px 4px;
         font-size: 14px;
-        /* Larger for easier mobile input */
     }
 
-    /* Modal improvements */
     .modal-content {
         width: 95%;
         margin: 20% auto;
         padding: 20px;
     }
 
-    /* Copyright footer */
     .copyright-footer {
         font-size: 0.75rem;
         padding: 10px;
     }
 }
 
-/* Very small phones */
 @media screen and (max-width: 480px) {
     .login-card {
         padding: 1.2rem;
@@ -571,7 +734,6 @@ input::-webkit-inner-spin-button {
 
     .tabs button {
         flex: 1 1 100%;
-        /* Stack buttons vertically on very small screens */
         margin: 5px 0;
     }
 
@@ -585,190 +747,127 @@ input::-webkit-inner-spin-button {
     }
 }
 
-/* --- Print Media Query - Single Page Layout --- */
+/* --- Strict Print Logic (Universal) --- */
 @media print {
     @page {
-        size: A4 portrait;
-        margin: 8mm;
-        /* Reduced margin for more content space */
+        size: A4 landscape;
+        margin: 5mm;
     }
 
     body {
-        background: white;
-        font-family: 'Times New Roman', serif;
-        /* Better for formal reports */
-        color: #000 !important;
-        /* Force true black */
-        -webkit-print-color-adjust: exact;
-        print-color-adjust: exact;
-    }
-
-    /* Global: Prevent page breaks */
-    * {
-        page-break-inside: avoid !important;
-    }
-
-    /* Main containers */
-    #dashboard-screen,
-    #admin-dashboard-screen {
-        page-break-inside: avoid;
-    }
-
-    .table-container {
-        page-break-inside: avoid;
-        margin-bottom: 5px;
-        /* Reduced spacing */
-    }
-
-    /* Titles and headings - compact */
-    h3,
-    h4 {
-        margin: 5px 0;
-        font-size: 11pt;
-        page-break-after: avoid;
-    }
-
-    /* Hide Web UI */
-    #login-screen,
-    .control-panel,
-    .no-print,
-    .copyright-footer,
-    .modal,
-    .tabs,
-    button {
-        display: none !important;
-    }
-
-    /* Hide whatever is hidden in the UI */
-    #dashboard-screen[style*="display: none"],
-    #admin-dashboard-screen[style*="display: none"],
-    #admin-view-reports[style*="display: none"],
-    #admin-view-status[style*="display: none"] {
-        display: none !important;
-    }
-
-    #dashboard-screen,
-    #admin-dashboard-screen {
-        width: 100%;
         margin: 0;
         padding: 0;
-    }
-
-    .logo-img {
-        width: 50px !important;
-        height: auto;
-    }
-
-    /* Professional Table Design for Print */
-    table {
+        background: white;
+        font-family: 'Times New Roman', serif;
+        color: #000 !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
         width: 100%;
-        border-collapse: collapse;
-        margin-top: 10px;
-        margin-bottom: 10px;
-        font-size: 10pt;
-        /* Reduced font size for better fit */
-        border: 2px solid #000;
-        /* Outer heavy border */
-        page-break-inside: avoid;
-        /* Prevent table from splitting across pages */
+        height: 100%;
+        overflow: visible;
     }
 
-    th,
-    td {
-        border: 1px solid #000;
-        /* Sharp internal borders */
-        padding: 4px 6px;
-        /* Reduced padding for compact layout */
-        text-align: center;
-        color: #000 !important;
-        page-break-inside: avoid;
+    /* 1. NUCLEAR OPTION: Hide EVERYTHING at the root level */
+    body>* {
+        display: none !important;
     }
 
-    th {
-        background-color: #f0f0f0 !important;
-        /* Light grey header */
-        font-weight: bold;
-        border-bottom: 2px solid #000;
-    }
-
-    /* Headers */
-    .print-header-container {
-        display: flex;
-        justify-content: space-between;
-        align-items: bottom;
-        border-bottom: 3px double #000;
-        padding-bottom: 5px;
-        margin-bottom: 10px;
-        /* Reduced spacing */
-        page-break-after: avoid;
-        /* Keep header with content */
-    }
-
-    .ph-right,
-    .ph-left {
-        width: 30%;
-        text-align: center;
-        font-weight: bold;
-        font-size: 9pt;
-        /* Reduced font size */
-    }
-
-    .ph-center {
-        width: 40%;
-        text-align: center;
-    }
-
-    .ph-center h2 {
-        font-size: 14pt;
-        /* Reduced font size */
-        margin: 5px 0;
-        text-decoration: none;
-        border: 2px solid #000;
-        padding: 3px 10px;
-        display: inline-block;
-        border-radius: 5px;
-    }
-
-    /* Signatures */
-    .print-footer-container {
-        display: flex;
-        justify-content: space-between;
-        margin-top: 20px;
-        /* Reduced top margin */
-        padding-top: 10px;
-        page-break-inside: avoid;
-        /* Keep signatures together */
-        page-break-before: avoid;
-        /* Keep with content above */
-    }
-
-    .signature-block {
-        width: 40%;
-        text-align: center;
-        font-weight: bold;
-        font-size: 10pt;
-        /* Reduced font size */
-        page-break-inside: avoid;
-    }
-
-    /* Inputs as Plain Text */
-    input,
-    .sub-input,
-    select {
-        border: none !important;
-        background: transparent !important;
-        width: auto !important;
-        text-align: center;
-        font-weight: bold;
+    /* 2. REVEAL ONLY the Print Area */
+    body>#school-print-area {
+        display: block !important;
+        position: relative !important;
+        top: auto;
+        left: auto;
+        width: 100% !important;
+        height: auto !important;
+        margin: 0 !important;
         padding: 0 !important;
-        font-size: 12pt !important;
-        color: #000 !important;
-        appearance: none;
-        display: inline-block;
+        visibility: visible !important;
+        zoom: 90%;
+        /* Scale down slightly to ensure fit */
     }
 
-    .logo-img {
-        width: 60px !important;
-        height: auto;
+    /* Ensure children of print area are visible */
+    #school-print-area * {
+        visibility: visible !important;
+        display: block;
+        /* Default to block for most elements */
     }
+
+    /* Restore Flex layouts inside print area */
+    #school-print-area .print-header-container,
+    #school-print-area div[style*="display:flex"] {
+        display: flex !important;
+    }
+
+    /* Restore Table Structure */
+    #school-print-area table {
+        display: table !important;
+        width: 100% !important;
+        border-collapse: collapse;
+        border: 2px solid #000;
+        table-layout: auto;
+        /* Dynamic layout is safer */
+    }
+
+    #school-print-area tr {
+        display: table-row !important;
+    }
+
+    #school-print-area th,
+    #school-print-area td {
+        display: table-cell !important;
+        border: 1px solid #000;
+        padding: 6px 2px;
+        text-align: center !important;
+        vertical-align: middle;
+        font-size: 10pt;
+        color: #000 !important;
+        overflow: visible;
+        /* Don't hide overflow */
+        word-break: break-word;
+    }
+
+    #school-print-area th {
+        background-color: #f0f0f0 !important;
+        font-weight: bold;
+        line-height: 1.1;
+    }
+
+    /* Column Widths */
+    /* Labels Col */
+    #school-print-area table th:first-child,
+    #school-print-area table td:first-child {
+        width: 180px !important;
+        /* Fixed width for labels */
+        min-width: 180px !important;
+        text-align: right !important;
+        padding-right: 8px;
+        white-space: normal;
+    }
+
+    /* Small Col (School Count) */
+    #school-print-area table th:nth-child(2),
+    #school-print-area table td:nth-child(2) {
+        width: 40px !important;
+        min-width: 40px !important;
+    }
+
+    /* Numeric Cols */
+    #school-print-area table th:nth-child(n+3),
+    #school-print-area table td:nth-child(n+3) {
+        min-width: 28px !important;
+        /* Ensure digits fit */
+        font-size: 10pt !important;
+        white-space: nowrap !important;
+    }
+
+    /* Clear numbers */
+}
+
+/* Logos */
+.logo-img {
+    width: 70px !important;
+    height: auto;
+}
 }
