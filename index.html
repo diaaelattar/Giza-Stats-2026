@@ -1,0 +1,1130 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+    <title>منظومة الإحصاء - محافظة الجيزة</title>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
+    <!-- SweetAlert2 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/@sweetalert2/theme-bootstrap-4/bootstrap-4.css" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="style.css">
+
+</head>
+
+<body>
+
+    <!-- Login Screen -->
+    <div id="login-screen">
+        <div class="login-card">
+            <img src="logo.jpg" alt="Logo" style="width: 60px; margin-bottom: 15px;">
+            <h2>محافظة الجيزة</h2>
+            <h3>منظومة إحصاء التعليم الابتدائي</h3>
+
+            <!-- Dynamic Dropdowns -->
+            <div id="loading-schools" style="margin: 20px 0; color: #666;">جاري تحميل قائمة المدارس...</div>
+
+            <div id="login-form-area" style="display: none; width: 100%;">
+                <select id="schoolTypeSelect" onchange="filterSchools()">
+                    <option value="">اختر نوع التعليم...</option>
+                </select>
+
+                <select id="schoolNameSelect">
+                    <option value="">اختر المدرسة...</option>
+                </select>
+
+                <input type="password" id="schoolCode" placeholder="كود المدرسة (الرقم السري)">
+                <button class="login-btn" onclick="login()">تسجيل الدخول</button>
+
+                <div style="margin-top: 15px;">
+                    <a href="#" onclick="showPasswordModal()"
+                        style="font-size: 0.9rem; color: var(--primary-color); text-decoration: none;">تغيير كلمة
+                        المرور</a>
+                    <span style="color:#ccc; margin:0 5px;">|</span>
+                    <a href="#" onclick="showAdminLogin()"
+                        style="font-size: 0.9rem; color: #e74c3c; text-decoration: none;">دخول المسؤول (Admin)</a>
+                </div>
+            </div>
+        </div>
+        <div class="copyright-footer" style="background: transparent; border: none; font-size: 0.8rem;">
+            إدارة العمرانية التعليمية 2026 &copy; <br>
+            تطوير: <span style="font-family: sans-serif; font-weight: bold;">Diaa El Attar</span>
+        </div>
+    </div>
+
+    <!-- Admin Login Modal -->
+    <div id="admin-login-modal" class="modal">
+        <div class="modal-content" style="border-top: 5px solid #e74c3c;">
+            <h3 style="color: #e74c3c;">دخول المسؤول</h3>
+            <input type="password" id="admin-pass-input" placeholder="كلمة مرور المسؤول">
+            <button class="modal-btn" style="background: #e74c3c; color: white;"
+                onclick="submitAdminLogin()">دخول</button>
+            <button class="modal-btn" style="background: #7f8c8d; color: white;"
+                onclick="closeModal('admin-login-modal')">إلغاء</button>
+        </div>
+    </div>
+
+    <!-- Password Change Modal -->
+    <div id="password-modal" class="modal">
+        <div class="modal-content">
+            <h3 style="color: var(--primary-color);">تغيير كلمة المرور</h3>
+            <p style="font-size: 0.8rem; color: #666; margin-bottom: 10px;">اختر المدرسة من الشاشة الرئيسية أولاً</p>
+
+            <input type="password" id="old-pass" placeholder="كلمة المرور القديمة">
+            <input type="text" id="new-pass" placeholder="كلمة المرور الجديدة (أرقام فقط)"
+                oninput="validateNumberInput(this)">
+
+            <div style="margin-top: 15px;">
+                <button class="modal-btn" style="background: var(--primary-color); color: white;"
+                    onclick="changePassword()">حفظ التغيير</button>
+                <button class="modal-btn" style="background: #e74c3c; color: white;"
+                    onclick="closeModal('password-modal')">إلغاء</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Admin Dashboard Screen -->
+    <div id="admin-dashboard-screen">
+        <div class="control-panel no-print">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <div class="user-info">
+                    <strong>لوحة تحكم المسؤول</strong>
+                    <span style="margin: 0 10px; color: #ccc;">|</span>
+                    <span id="admin-grade-title">الصف الثالث الابتدائي</span>
+                </div>
+                <button onclick="logoutAdmin()" class="tab-btn" style="background: #e74c3c; color: white;">تسجيل خروج
+                    🔒</button>
+            </div>
+
+            <hr style="margin: 10px 0; border: 0; border-top: 1px solid #ddd;">
+
+            <div class="tabs" style="justify-content: center; margin-bottom: 10px;">
+                <button class="tab-btn active" onclick="loadAdminStats(3)">3 ابتدائي</button>
+                <button class="tab-btn" onclick="loadAdminStats(4)">4 ابتدائي</button>
+                <button class="tab-btn" onclick="loadAdminStats(5)">5 ابتدائي</button>
+                <button class="tab-btn" onclick="loadAdminStats(6)">6 ابتدائي</button>
+            </div>
+
+            <!-- Admin View Switcher -->
+            <div class="tabs" style="justify-content: center; background: #f1f2f6; padding: 5px; border-radius: 10px;">
+                <button class="tab-btn active" id="btn-view-reports" onclick="switchAdminView('reports')">📊 تقرير
+                    الإحصاء</button>
+                <button class="tab-btn" id="btn-view-status" onclick="switchAdminView('status')">🏫 موقف
+                    المدارس</button>
+                <button onclick="exportAdminToExcel()" class="tab-btn" style="background: #27ae60; color: white;">📥
+                    تصدير Excel</button>
+                <button onclick="window.print()" class="tab-btn"
+                    style="background: var(--primary-color); color: white;">🖨️ طباعة</button>
+            </div>
+        </div>
+
+        <!-- View 1: Statistical Reports -->
+        <div id="admin-view-reports" class="table-container">
+            <!-- Print Header for Admin -->
+            <div class="print-header-container">
+                <!-- Visible in print only handled by CSS mostly, but logic here -->
+                <div class="ph-right">
+                    <h4>مديرية التربية والتعليم بالجيزة</h4>
+                    <h4>إدارة العمرانية التعليمية</h4>
+                    <h4>التعليم الابتدائي</h4>
+                </div>
+                <div class="ph-center">
+                    <h2 id="admin-print-title">إحصاء مجمع</h2>
+                </div>
+                <div class="ph-left">
+                    <img src="logo.jpg" class="logo-img" alt="Logo">
+                </div>
+            </div>
+
+            <h3 style="text-align: center; margin-bottom: 20px; color: var(--primary-color);">بيان إحصائي مجمع</h3>
+
+            <!-- Aggregated Table -->
+            <table style="width: 100%; margin-bottom: 30px;">
+                <thead>
+                    <tr>
+                        <th>البيان</th>
+                        <th>عدد المدارس</th>
+                        <th>جملة المتقدمين</th>
+                        <th>جملة الحاضرين</th>
+                        <th>عدد الناجحين</th>
+                        <th>النسبة المئوية %</th>
+                        <th>ملاحظات</th>
+                    </tr>
+                </thead>
+                <tbody id="admin-agg-body">
+                    <!-- JS Injected -->
+                </tbody>
+            </table>
+
+            <!-- Subjects Aggregated Table -->
+            <h4 style="text-align: center; text-decoration: underline; margin: 10px 0;">نسب النجاح في المواد</h4>
+            <table style="width: 100%;">
+                <thead style="background-color: #fce4ec; color: #c2185b;">
+                    <tr>
+                        <th>المادة</th>
+                        <th>المتقدمين</th>
+                        <th>الحاضرين</th>
+                        <th>الناجحين</th>
+                        <th>%</th>
+                        <th>ملاحظات</th>
+                    </tr>
+                </thead>
+                <tbody id="admin-subj-body">
+                    <!-- JS Injected -->
+                </tbody>
+            </table>
+
+            <!-- Signatures -->
+            <div class="print-footer-container">
+                <div class="signature-block">
+                    <div class="sig-title">رئيس اللجنة</div>
+                    <div
+                        style="margin-top: 50px; border-top: 1px solid #000; display: inline-block; padding-top: 5px; min-width: 150px;">
+                        الاسم والتوقيع</div>
+                </div>
+                <div class="signature-block">
+                    <div class="sig-title">مدير عام الإدارة</div>
+                    <div
+                        style="margin-top: 50px; border-top: 1px solid #000; display: inline-block; padding-top: 5px; min-width: 150px;">
+                        الاسم والتوقيع</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- View 2: School Status -->
+        <div id="admin-view-status" class="table-container" style="display: none;">
+            <h3 style="text-align: center; margin-bottom: 20px;">موقف المدارس من التسجيل</h3>
+
+            <div style="display: flex; gap: 20px;">
+                <!-- Submitted -->
+                <div style="flex: 1; border: 1px solid #27ae60; border-radius: 8px; overflow: hidden;">
+                    <h4 style="background: #27ae60; color: white; margin: 0; padding: 10px; text-align: center;">
+                        مدارس سجلت (<span id="count-submitted">0</span>)
+                    </h4>
+                    <ul id="list-submitted"
+                        style="list-style: none; padding: 10px; font-size: 0.9rem; max-height: 500px; overflow-y: auto;">
+                    </ul>
+                </div>
+
+                <!-- Missing -->
+                <div style="flex: 1; border: 1px solid #e74c3c; border-radius: 8px; overflow: hidden;">
+                    <h4 style="background: #e74c3c; color: white; margin: 0; padding: 10px; text-align: center;">
+                        مدارس لم تسجل بعد (<span id="count-missing">0</span>)
+                    </h4>
+                    <ul id="list-missing"
+                        style="list-style: none; padding: 10px; font-size: 0.9rem; max-height: 500px; overflow-y: auto;">
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Dashboard Screen -->
+    <div id="dashboard-screen">
+
+        <!-- Print Header -->
+        <div class="print-header-container">
+            <div class="ph-right">
+                <h4>مديرية التربية والتعليم بالجيزة</h4>
+                <h4>إدارة العمرانية التعليمية</h4>
+                <h4>التعليم الابتدائي</h4>
+                <!-- School Name -->
+                <h4 id="print-school-name"
+                    style="margin-top: 10px; font-weight: 800; border: 1px dashed black; padding: 5px; display: inline-block;">
+                </h4>
+            </div>
+            <div class="ph-center">
+                <h2 id="print-title">إحصاء نصف العام</h2>
+                <p id="print-date" style="font-size: 11pt; margin: 5px 0;">التاريخ: ____ / ____ / 2026</p>
+            </div>
+            <div class="ph-left">
+                <img src="logo.jpg" class="logo-img" alt="Logo">
+            </div>
+        </div>
+
+        <!-- UI Controls (Hidden in print) -->
+        <div class="control-panel no-print">
+            <div class="user-info">
+                <strong>مرحباً، </strong> <span id="ui-school-name" style="color: var(--primary-color);"></span>
+                <span style="margin: 0 10px; color: #ccc;">|</span>
+                <span id="ui-school-type"></span>
+            </div>
+            <div class="tabs">
+                <button class="tab-btn active" onclick="showGrade(3)">3 ابتدائي</button>
+                <button class="tab-btn" onclick="showGrade(4)">4 ابتدائي</button>
+                <button class="tab-btn" onclick="showGrade(5)">5 ابتدائي</button>
+                <button class="tab-btn" onclick="showGrade(6)">6 ابتدائي</button>
+            </div>
+            <div>
+                <button onclick="printReport()" class="tab-btn"
+                    style="background: var(--primary-color); color: white;">🖨️ طباعة</button>
+                <button onclick="saveData()" class="tab-btn" style="background: #27ae60; color: white;">💾 حفظ</button>
+            </div>
+        </div>
+
+        <!-- Data Area -->
+        <div id="form-area" class="table-container">
+            <h3 class="no-print"
+                style="margin-top: 0; color: var(--primary-color); border-bottom: 2px solid #eee; padding-bottom: 10px;">
+                بيان إحصائي: <span id="grade-title">الصف الثالث الابتدائي</span>
+            </h3>
+
+            <!-- General Stats Table -->
+            <h4 style="margin: 10px 0;">أولاً: الإحصاء العام</h4>
+            <table>
+                <thead>
+                    <tr>
+                        <th width="20%">نوع التعليم</th>
+                        <th width="20%">جملة المتقدمين</th>
+                        <th width="20%">عدد الحاضرين</th>
+                        <th width="20%">عدد الناجحين</th>
+                        <th width="20%">النسبة المئوية %</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td id="school-type-display">-</td>
+                        <td><input type="number" id="gen_applied" class="sub-input" min="0"
+                                oninput="validateNumberInput(this)" onchange="calcPerc('gen')"></td>
+                        <td><input type="number" id="gen_present" class="sub-input" min="0"
+                                oninput="validateNumberInput(this)" onchange="calcPerc('gen')"></td>
+                        <td><input type="number" id="gen_success" class="sub-input" min="0"
+                                oninput="validateNumberInput(this)" onchange="calcPerc('gen')"></td>
+                        <td id="gen_perc" style="font-weight: bold;">0%</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <!-- Subjects Stats Table -->
+            <h4 style="margin: 15px 0 10px;">ثانياً: إحصاء المواد الدراسية</h4>
+            <table id="subjects-table">
+                <thead>
+                    <tr>
+                        <th width="25%">المادة الدراسية</th>
+                        <th width="15%">المتقدمين</th>
+                        <th width="15%">الحاضرين</th>
+                        <th width="15%">الناجحين</th>
+                        <th width="15%">النسبة %</th>
+                    </tr>
+                </thead>
+                <tbody id="subjects-body">
+                    <!-- Rows generated by JS -->
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Print Footer Signatures -->
+        <div class="print-footer-container">
+            <!-- Right Side (First in RTL) -->
+            <div class="sig-block">
+                <div class="sig-title">رئيس لجنة النظام والمراقبة</div>
+                <div
+                    style="margin-top: 50px; border-top: 1px solid #000; display: inline-block; padding-top: 5px; min-width: 150px;">
+                    الاسم والتوقيع</div>
+            </div>
+            <!-- Left Side (Second in RTL) -->
+            <div class="sig-block">
+                <div class="sig-title">مدير المدرسة</div>
+                <div
+                    style="margin-top: 50px; border-top: 1px solid #000; display: inline-block; padding-top: 5px; min-width: 150px;">
+                    الاسم والتوقيع</div>
+            </div>
+        </div>
+
+        <!-- Sticky Footer -->
+        <div class="copyright-footer no-print">
+            التعليم الابتدائى ادارة العمرانية التعليمية 2026 &copy; | تصميم وتطوير: <strong>Diaa El Attar</strong>
+        </div>
+    </div>
+
+    <!-- SweetAlert2 Script -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <script>
+        // *** RENAME THIS IF DEPLOYING NEW VERSION ***
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz0dlQGnhz5WlXRcrcZbS5oEsPGpwpxx0ZlxAk-bPoiNnZYUwZ70IDcYc_lUWqP9dFGgw/exec";
+
+        let currentSchool = {};
+        let currentGrade = 3;
+        let allSchoolsData = [];
+
+        const subjectsConfig = {
+            3: ["لغة عربية", "رياضيات", "لغة انجليزية", "متعدد التخصصات", "تربية دينية", "توكاتسو", "تربية بدنية"],
+            4: ["لغة عربية", "رياضيات", "لغة انجليزية", "علوم", "دراسات اجتماعية", "مهارات مهنية", "تكنولوجيا", "تربية دينية", "تربية بدنية", "تربية فنية", "تربية موسيقية", "توكاتسو"],
+            5: ["لغة عربية", "رياضيات", "لغة انجليزية", "علوم", "دراسات اجتماعية", "مهارات مهنية", "تكنولوجيا", "تربية دينية", "تربية بدنية", "تربية فنية", "تربية موسيقية", "توكاتسو"],
+            6: ["لغة عربية", "رياضيات", "لغة انجليزية", "علوم", "دراسات اجتماعية", "مهارات مهنية", "تكنولوجيا", "تربية دينية", "تربية بدنية", "تربية فنية", "تربية موسيقية", "توكاتسو"]
+        };
+
+        // Utility: Show Toast
+        const Toast = Swal.mixin({
+            toast: true,
+            position: 'top-end',
+            showConfirmButton: false,
+            timer: 3000,
+            timerProgressBar: true,
+            didOpen: (toast) => {
+                toast.addEventListener('mouseenter', Swal.stopTimer)
+                toast.addEventListener('mouseleave', Swal.resumeTimer)
+            }
+        });
+
+        window.onload = function () {
+            fetch(SCRIPT_URL, {
+                method: "POST",
+                body: JSON.stringify({ action: "getSchools" })
+            })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.status === "success") {
+                        allSchoolsData = data.schools;
+                        populateTypes();
+                        document.getElementById('loading-schools').style.display = 'none';
+                        document.getElementById('login-form-area').style.display = 'block';
+                    }
+                })
+                .catch(err => {
+                    console.error(err);
+                    document.getElementById('loading-schools').innerHTML = `<span style="color:red; direction:ltr;">Error: ${err.message}</span><br>تأكد من إعدادات النشر (Deploy) وأن الصلاحيات (Anyone).`;
+                    Toast.fire({ icon: 'error', title: 'فشل الاتصال بالخادم', text: err.message });
+                });
+        };
+
+        function populateTypes() {
+            const typeSelect = document.getElementById('schoolTypeSelect');
+            const types = [...new Set(allSchoolsData.map(s => s.type))];
+            types.forEach(type => {
+                let opt = document.createElement('option');
+                opt.value = type;
+                opt.innerText = type;
+                typeSelect.appendChild(opt);
+            });
+        }
+
+        function filterSchools() {
+            const selectedType = document.getElementById('schoolTypeSelect').value;
+            const nameSelect = document.getElementById('schoolNameSelect');
+            nameSelect.innerHTML = '<option value="">اختر المدرسة...</option>';
+
+            const filtered = allSchoolsData.filter(s => s.type === selectedType);
+            filtered.forEach(s => {
+                let opt = document.createElement('option');
+                opt.value = s.name;
+                opt.innerText = s.name;
+                nameSelect.appendChild(opt);
+            });
+        }
+
+        /* --- Admin Logic --- */
+        function showAdminLogin() {
+            document.getElementById('admin-login-modal').style.display = 'block';
+        }
+
+        function closeModal(id) {
+            document.getElementById(id).style.display = 'none';
+        }
+
+        function submitAdminLogin() {
+            const pass = document.getElementById('admin-pass-input').value;
+            if (!pass) return;
+
+            fetch(SCRIPT_URL, {
+                method: "POST",
+                body: JSON.stringify({ action: "adminLogin", password: pass })
+            })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.status === "success") {
+                        closeModal('admin-login-modal');
+                        document.getElementById('login-screen').style.display = 'none';
+                        document.getElementById('admin-dashboard-screen').style.display = 'block';
+                        loadAdminStats(3); // Default load
+                        Toast.fire({ icon: 'success', title: 'مرحباً بالمسؤول' });
+                    } else {
+                        Swal.fire('خطأ', 'كلمة المرور غير صحيحة', 'error');
+                    }
+                });
+        }
+
+        function logoutAdmin() {
+            document.getElementById('admin-dashboard-screen').style.display = 'none';
+            document.getElementById('login-screen').style.display = 'flex';
+        }
+
+        function switchAdminView(view) {
+            // Remove active from buttons
+            document.getElementById('btn-view-reports').classList.remove('active');
+            document.getElementById('btn-view-status').classList.remove('active');
+
+            // Hide all views
+            document.getElementById('admin-view-reports').style.display = 'none';
+            document.getElementById('admin-view-status').style.display = 'none';
+
+            // Activate Selected
+            document.getElementById('btn-view-' + view).classList.add('active');
+            document.getElementById('admin-view-' + view).style.display = 'block';
+        }
+
+        function loadAdminStats(grade) {
+            currentAdminGrade = grade; // Track current grade
+
+            // Update UI Tabs
+            document.querySelectorAll('#admin-dashboard-screen .tab-btn').forEach(b => b.classList.remove('active'));
+            // This relies on order 3,4,5,6
+            const tabs = document.querySelectorAll('#admin-dashboard-screen .tab-btn');
+            if (tabs[grade - 3]) tabs[grade - 3].classList.add('active');
+
+            const gradeText = grade == 3 ? 'الصف الثالث الابتدائي' : grade == 4 ? 'الصف الرابع الابتدائي' : grade == 5 ? 'الصف الخامس الابتدائي' : 'الصف السادس الابتدائي';
+            document.getElementById('admin-grade-title').innerText = gradeText;
+
+            // Show Loading
+            Swal.fire({ title: 'جاري جلب البيانات...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+
+            fetch(SCRIPT_URL, {
+                method: "POST",
+                body: JSON.stringify({ action: "getAdminStats", grade: grade })
+            })
+                .then(res => res.json())
+                .then(data => {
+                    Swal.close();
+                    if (data.status === "success") {
+                        renderAdminTables(data, grade);
+                    } else {
+                        Toast.fire({ icon: 'error', title: 'فشل تحميل البيانات' });
+                    }
+                });
+        }
+
+        function renderAdminTables(data, grade) {
+            const aggBody = document.getElementById('admin-agg-body');
+            const subjBody = document.getElementById('admin-subj-body');
+            aggBody.innerHTML = "";
+            subjBody.innerHTML = "";
+
+            // 1. School Types Table
+            const typesOrder = ["رسمي عربي", "رسمي لغات", "خاص عربي", "خاص لغات", "دولى"]; // Match Backend
+            let totalSchools = 0, totalApp = 0, totalPre = 0, totalSuc = 0;
+
+            typesOrder.forEach(t => {
+                let rowData = data.aggregations[t] || { count: 0, applied: 0, present: 0, success: 0 };
+                let perc = rowData.present > 0 ? ((rowData.success / rowData.present) * 100).toFixed(1) + "%" : "0%";
+
+                totalSchools += rowData.count;
+                totalApp += rowData.applied;
+                totalPre += rowData.present;
+                totalSuc += rowData.success;
+
+                aggBody.innerHTML += `
+                    <tr>
+                        <td>مدارس ${t}</td>
+                        <td>${rowData.count}</td>
+                        <td>${rowData.applied}</td>
+                        <td>${rowData.present}</td>
+                        <td>${rowData.success}</td>
+                        <td>${perc}</td>
+                        <td></td>
+                    </tr>
+                `;
+            });
+
+            // Total Row
+            let totalPerc = totalPre > 0 ? ((totalSuc / totalPre) * 100).toFixed(1) + "%" : "0%";
+            aggBody.innerHTML += `
+                <tr style="background-color: #eee;">
+                    <td>الإجمالي</td>
+                    <td>${totalSchools}</td>
+                    <td>${totalApp}</td>
+                    <td>${totalPre}</td>
+                    <td>${totalSuc}</td>
+                    <td>${totalPerc}</td>
+                    <td></td>
+                </tr>
+            `;
+
+            // 2. Subjects Table
+            data.subjectsAgg.forEach((subjData, idx) => {
+                let subjName = subjectsConfig[grade][idx];
+                let perc = subjData.present > 0 ? ((subjData.success / subjData.present) * 100).toFixed(1) + "%" : "0%";
+
+                subjBody.innerHTML += `
+                    <tr>
+                        <td>${subjName}</td>
+                        <td>${subjData.applied}</td>
+                        <td>${subjData.present}</td>
+                        <td>${subjData.success}</td>
+                        <td>${perc}</td>
+                        <td></td>
+                    </tr>
+                `;
+            });
+
+            // 3. Render School Lists
+            const listSub = document.getElementById('list-submitted');
+            const listMis = document.getElementById('list-missing');
+            listSub.innerHTML = "";
+            listMis.innerHTML = "";
+
+            document.getElementById('count-submitted').innerText = data.submittedSchools.length;
+            document.getElementById('count-missing').innerText = data.missingSchools.length;
+
+            data.submittedSchools.forEach(s => {
+                listSub.innerHTML += `<li style="border-bottom: 1px solid #eee; padding: 5px;">✅ ${s}</li>`;
+            });
+
+            data.missingSchools.forEach(s => {
+                listMis.innerHTML += `<li style="border-bottom: 1px solid #eee; padding: 5px;">❌ ${s}</li>`;
+            });
+        }
+
+        // Export Admin Data to Excel
+        function exportAdminToExcel() {
+            const currentAdminGrade = getCurrentAdminGrade(); // We need to track this
+
+            Swal.fire({
+                title: 'جاري تصدير البيانات...',
+                html: 'يتم الآن إنشاء ملف Excel، يرجى الانتظار...',
+                allowOutsideClick: false,
+                didOpen: () => Swal.showLoading()
+            });
+
+            fetch(SCRIPT_URL, {
+                method: "POST",
+                body: JSON.stringify({
+                    action: "exportToExcel",
+                    grades: [3, 4, 5, 6] // Export all grades
+                })
+            })
+                .then(res => res.json())
+                .then(data => {
+                    Swal.close();
+                    if (data.status === "success") {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'تم التصدير بنجاح!',
+                            html: `<p>تم إنشاء ملف Excel بنجاح.</p>
+                                   <a href="${data.fileUrl}" target="_blank" style="color: #27ae60; font-weight: bold;">
+                                   📥 اضغط هنا لفتح الملف</a>`,
+                            confirmButtonColor: 'var(--primary-color)'
+                        });
+                    } else {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'فشل التصدير',
+                            text: data.message || 'حدث خطأ أثناء التصدير',
+                            confirmButtonColor: '#e74c3c'
+                        });
+                    }
+                })
+                .catch(err => {
+                    Swal.close();
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'خطأ في الاتصال',
+                        text: 'تعذر الاتصال بالخادم، يرجى المحاولة مرة أخرى.',
+                        confirmButtonColor: '#e74c3c'
+                    });
+                });
+        }
+
+        // Helper to get current admin grade (we need to track this)
+        let currentAdminGrade = 3; // Default
+        function getCurrentAdminGrade() {
+            return currentAdminGrade;
+        }
+
+        /* --- Validation Logic --- */
+        function validateNumberInput(input) {
+            // Remove non-numeric chars
+            input.value = input.value.replace(/[^0-9]/g, '');
+            // Prevent negative (though regex handles it mostly)
+            if (input.value && parseInt(input.value) < 0) input.value = 0;
+        }
+
+        /* --- Password Logic --- */
+        function showPasswordModal() {
+            document.getElementById('password-modal').style.display = 'block';
+            document.getElementById('old-pass').value = "";
+            document.getElementById('new-pass').value = "";
+        }
+
+        function closePasswordModal() {
+            document.getElementById('password-modal').style.display = 'none';
+        }
+
+        function changePassword() {
+            const name = document.getElementById('schoolNameSelect').value;
+            const oldCode = document.getElementById('old-pass').value;
+            const newCode = document.getElementById('new-pass').value;
+
+            if (!name) {
+                Toast.fire({ icon: 'warning', title: 'اختر المدرسة أولاً من الشاشة الرئيسية' });
+                return;
+            }
+            if (!oldCode || !newCode) {
+                Toast.fire({ icon: 'warning', title: 'يرجى ملء جميع الحقول' });
+                return;
+            }
+            if (!/^\d+$/.test(newCode)) {
+                Toast.fire({ icon: 'error', title: 'كلمة المرور الجديدة يجب أن تكون أرقاماً فقط' });
+                return;
+            }
+
+            fetch(SCRIPT_URL, {
+                method: "POST",
+                body: JSON.stringify({
+                    action: "changePassword",
+                    name: name,
+                    oldCode: oldCode,
+                    newCode: newCode
+                })
+            })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.status === "success") {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'تم بنجاح!',
+                            text: data.message,
+                            confirmButtonText: 'حسناً',
+                            confirmButtonColor: 'var(--primary-color)'
+                        });
+                        closePasswordModal();
+                    } else {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'خطأ',
+                            text: data.message,
+                            confirmButtonText: 'حاوِلة مرة أخرى',
+                            confirmButtonColor: '#e74c3c'
+                        });
+                    }
+                })
+                .catch(err => {
+                    Toast.fire({ icon: 'error', title: 'حدث خطأ في الاتصال' });
+                });
+        }
+
+
+        /* --- Login & App Logic --- */
+        function login() {
+            const type = document.getElementById('schoolTypeSelect').value;
+            const name = document.getElementById('schoolNameSelect').value;
+            const code = document.getElementById('schoolCode').value;
+
+            const btn = document.querySelector('.login-btn');
+
+            if (!type || !name || !code) {
+                Toast.fire({ icon: 'warning', title: 'يرجى استكمال جميع البيانات' });
+                return;
+            }
+
+            btn.disabled = true;
+            btn.innerHTML = 'جاري التحقق... <span style="display:inline-block;animation:spin 1s infinite">↻</span>';
+
+            fetch(SCRIPT_URL, {
+                method: "POST",
+                body: JSON.stringify({ action: "login", name: name, code: code })
+            })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.status === "success") {
+                        currentSchool = data.schoolData;
+
+                        document.getElementById('login-screen').style.display = 'none';
+                        document.getElementById('dashboard-screen').style.display = 'block';
+                        document.body.style.justifyContent = 'flex-start';
+
+                        document.getElementById('print-school-name').innerText = "مدرسة: " + currentSchool.name;
+                        document.getElementById('ui-school-name').innerText = currentSchool.name;
+                        document.getElementById('school-type-display').innerText = currentSchool.type;
+                        document.getElementById('ui-school-type').innerText = currentSchool.type;
+
+                        showGrade(3);
+
+                        Toast.fire({ icon: 'success', title: 'تم تسجيل الدخول بنجاح' });
+                    } else {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'خطأ في الدخول',
+                            text: data.message,
+                            confirmButtonColor: '#e74c3c',
+                            confirmButtonText: 'حاول مرة أخرى'
+                        });
+                        btn.disabled = false;
+                        btn.innerText = "تسجيل الدخول";
+                    }
+                })
+                .catch(err => {
+                    Toast.fire({ icon: 'error', title: 'فشل الاتصال بالخادم' });
+                    btn.disabled = false;
+                    btn.innerText = "تسجيل الدخول";
+                });
+        }
+
+        function showGrade(grade) {
+            currentGrade = grade;
+            const gradeText = grade == 3 ? 'الثالث' : grade == 4 ? 'الرابع' : grade == 5 ? 'الخامس' : 'السادس';
+
+            document.getElementById('grade-title').innerText = `الصف ${gradeText} الابتدائي`;
+            document.getElementById('print-title').innerText = `إحصاء نتيجة امتحان الصف ${gradeText} لامتحانات نصف العام 2025 / 2026 م`;
+
+            // Update active tab (fix: target only dashboard tabs, not admin tabs)
+            const dashboardTabs = document.querySelectorAll('#dashboard-screen .tabs .tab-btn');
+            dashboardTabs.forEach(b => b.classList.remove('active'));
+            if (dashboardTabs[grade - 3]) dashboardTabs[grade - 3].classList.add('active');
+
+            const tbody = document.getElementById('subjects-body');
+            tbody.innerHTML = "";
+
+            subjectsConfig[grade].forEach((subj, index) => {
+                let row = `
+                    <tr>
+                        <td style="font-weight:bold; background-color: #fafafa;">${subj}</td>
+                        <td><input type="number" id="app_${index}" class="sub-input" min="0" oninput="validateNumberInput(this)" onchange="calcRowPerc(${index})"></td>
+                        <td><input type="number" id="pre_${index}" class="sub-input" min="0" oninput="validateNumberInput(this)" onchange="calcRowPerc(${index})"></td>
+                        <td><input type="number" id="suc_${index}" class="sub-input" min="0" oninput="validateNumberInput(this)" onchange="calcRowPerc(${index})"></td>
+                        <td id="perc_${index}" style="font-weight:bold; direction:ltr;">0%</td>
+                    </tr>
+                `;
+                tbody.innerHTML += row;
+            });
+
+            // Load saved data for this grade
+            loadSavedDataForGrade(grade);
+        }
+
+        // Load previously saved data for a specific grade
+        function loadSavedDataForGrade(grade) {
+            if (!currentSchool || !currentSchool.id) {
+                return; // Not logged in yet
+            }
+
+            // Show loading indicator
+            Toast.fire({ icon: 'info', title: 'جاري تحميل البيانات...' });
+
+            fetch(SCRIPT_URL, {
+                method: "POST",
+                body: JSON.stringify({
+                    action: "getSchoolStats",
+                    grade: grade,
+                    schoolId: currentSchool.id
+                })
+            })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.status === "success" && data.statsData) {
+                        populateFormWithData(data.statsData, grade);
+                        Toast.fire({
+                            icon: 'success',
+                            title: 'تم تحميل البيانات المحفوظة',
+                            timer: 2000
+                        });
+                    } else if (data.status === "notfound") {
+                        // No saved data, that's okay - form stays empty
+                        clearAllFields();
+                    } else {
+                        Toast.fire({
+                            icon: 'warning',
+                            title: 'لا توجد بيانات محفوظة لهذا الصف',
+                            timer: 2000
+                        });
+                        clearAllFields();
+                    }
+                })
+                .catch(err => {
+                    console.error("Error loading saved data:", err);
+                    clearAllFields();
+                });
+        }
+
+        // Populate form fields with saved data
+        function populateFormWithData(statsData, grade) {
+            // statsData format: [gen_applied, gen_present, gen_success, subj1_app, subj1_pre, subj1_suc, ...]
+
+            if (statsData.length < 3) return;
+
+            // Fill general stats
+            document.getElementById('gen_applied').value = statsData[0] || '';
+            document.getElementById('gen_present').value = statsData[1] || '';
+            document.getElementById('gen_success').value = statsData[2] || '';
+            calcPerc('gen');
+
+            // Fill subject stats
+            const numSubjects = subjectsConfig[grade].length;
+            for (let i = 0; i < numSubjects; i++) {
+                const baseIdx = 3 + (i * 3); // Start after general stats
+
+                if (baseIdx < statsData.length) {
+                    document.getElementById(`app_${i}`).value = statsData[baseIdx] || '';
+                }
+                if (baseIdx + 1 < statsData.length) {
+                    document.getElementById(`pre_${i}`).value = statsData[baseIdx + 1] || '';
+                }
+                if (baseIdx + 2 < statsData.length) {
+                    document.getElementById(`suc_${i}`).value = statsData[baseIdx + 2] || '';
+                }
+
+                calcRowPerc(i);
+            }
+        }
+
+        // Clear all form fields
+        function clearAllFields() {
+            document.getElementById('gen_applied').value = '';
+            document.getElementById('gen_present').value = '';
+            document.getElementById('gen_success').value = '';
+            document.getElementById('gen_perc').innerText = '0%';
+
+            const numSubjects = subjectsConfig[currentGrade].length;
+            for (let i = 0; i < numSubjects; i++) {
+                document.getElementById(`app_${i}`).value = '';
+                document.getElementById(`pre_${i}`).value = '';
+                document.getElementById(`suc_${i}`).value = '';
+                document.getElementById(`perc_${i}`).innerText = '0%';
+            }
+        }
+
+        function calcPerc(type) {
+            let app = parseFloat(document.getElementById(type + '_applied').value) || 0;
+            let pre = parseFloat(document.getElementById(type + '_present').value) || 0;
+            let suc = parseFloat(document.getElementById(type + '_success').value) || 0;
+
+            let appInput = document.getElementById(type + '_applied');
+            let preInput = document.getElementById(type + '_present');
+            let sucInput = document.getElementById(type + '_success');
+
+            [appInput, preInput, sucInput].forEach(el => el.classList.remove('input-error'));
+
+            if (pre > app) {
+                Toast.fire({ icon: 'error', title: 'تنبيه: الحاضرين أكبر من المتقدمين' });
+                preInput.classList.add('input-error');
+                return;
+            }
+            if (suc > pre) {
+                Toast.fire({ icon: 'error', title: 'تنبيه: الناجحين أكبر من الحاضرين' });
+                sucInput.classList.add('input-error');
+                return;
+            }
+
+            if (pre > 0) {
+                let perc = ((suc / pre) * 100).toFixed(1);
+                document.getElementById(type + '_perc').innerText = perc + "%";
+            } else {
+                document.getElementById(type + '_perc').innerText = "0%";
+            }
+
+            if (type === 'gen' && app > 0) updateAllSubjectsApplied(app);
+        }
+
+        function updateAllSubjectsApplied(val) {
+            subjectsConfig[currentGrade].forEach((_, index) => {
+                let input = document.getElementById(`app_${index}`);
+                if (input) {
+                    input.value = val;
+                    // Trigger calc to update percentages if present/success exist
+                    calcRowPerc(index);
+                }
+            });
+        }
+
+        function calcRowPerc(index) {
+            let app = parseFloat(document.getElementById(`app_${index}`).value) || 0;
+            let pre = parseFloat(document.getElementById(`pre_${index}`).value) || 0;
+            let suc = parseFloat(document.getElementById(`suc_${index}`).value) || 0;
+
+            let appInput = document.getElementById(`app_${index}`);
+            let preInput = document.getElementById(`pre_${index}`);
+            let sucInput = document.getElementById(`suc_${index}`);
+
+            [appInput, preInput, sucInput].forEach(el => el.classList.remove('input-error'));
+
+            if (pre > app) {
+                preInput.classList.add('input-error');
+                Toast.fire({ icon: 'error', title: 'خطأ: الحاضر أكبر من المتقدم' });
+                return;
+            }
+            if (suc > pre) {
+                sucInput.classList.add('input-error');
+                Toast.fire({ icon: 'error', title: 'خطأ: الناجح أكبر من الحاضر' });
+                return;
+            }
+
+            if (pre > 0) {
+                let perc = ((suc / pre) * 100).toFixed(1);
+                document.getElementById(`perc_${index}`).innerText = perc + "%";
+            } else {
+                document.getElementById(`perc_${index}`).innerText = "0%";
+            }
+        }
+
+        // Helper to check for errors and missing data
+        function hasValidationErrors() {
+            // Check for red inputs (logical errors)
+            if (document.querySelectorAll('.input-error').length > 0) return true;
+            return false;
+        }
+
+        // Comprehensive validation: checks if all required fields are filled
+        function validateAllData() {
+            const missingFields = [];
+
+            // Check general stats
+            const genApplied = document.getElementById('gen_applied').value;
+            const genPresent = document.getElementById('gen_present').value;
+            const genSuccess = document.getElementById('gen_success').value;
+
+            if (!genApplied || genApplied === '0') missingFields.push('جملة المتقدمين (الإحصاء العام)');
+            if (!genPresent || genPresent === '0') missingFields.push('عدد الحاضرين (الإحصاء العام)');
+            if (!genSuccess || genSuccess === '0') missingFields.push('عدد الناجحين (الإحصاء العام)');
+
+            // Check all subjects
+            const subjects = subjectsConfig[currentGrade];
+            subjects.forEach((subj, index) => {
+                const app = document.getElementById(`app_${index}`).value;
+                const pre = document.getElementById(`pre_${index}`).value;
+                const suc = document.getElementById(`suc_${index}`).value;
+
+                if (!app || app === '0') missingFields.push(`المتقدمين - ${subj}`);
+                if (!pre || pre === '0') missingFields.push(`الحاضرين - ${subj}`);
+                if (!suc || suc === '0') missingFields.push(`الناجحين - ${subj}`);
+            });
+
+            return missingFields;
+        }
+
+        function printReport() {
+            // Check for logical errors first
+            if (hasValidationErrors()) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'لا يمكن الطباعة!',
+                    text: 'توجد أخطاء في البيانات (خانات باللون الأحمر). يرجى تصحيحها أولاً.',
+                    confirmButtonColor: '#e74c3c'
+                });
+                return;
+            }
+
+            // Check for missing data
+            const missingFields = validateAllData();
+            if (missingFields.length > 0) {
+                const fieldsText = missingFields.slice(0, 5).join('\n• ');
+                const moreText = missingFields.length > 5 ? `\n... و ${missingFields.length - 5} حقول أخرى` : '';
+
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'بيانات ناقصة!',
+                    html: `<div style="text-align: right; direction: rtl;">
+                        <p>يجب إدخال جميع البيانات قبل الطباعة.</p>
+                        <p><strong>الحقول المفقودة (${missingFields.length}):</strong></p>
+                        <p style="color: #e74c3c; font-size: 0.9rem;">• ${fieldsText}${moreText}</p>
+                    </div>`,
+                    confirmButtonColor: 'var(--primary-color)',
+                    confirmButtonText: 'حسناً'
+                });
+                return;
+            }
+
+            window.print();
+        }
+
+        function saveData() {
+            // Check for logical errors first
+            if (hasValidationErrors()) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'لا يمكن الحفظ!',
+                    text: 'توجد أخطاء في البيانات (خانات باللون الأحمر). يرجى تصحيحها أولاً.',
+                    confirmButtonColor: '#e74c3c'
+                });
+                return;
+            }
+
+            // Check for missing data
+            const missingFields = validateAllData();
+            if (missingFields.length > 0) {
+                const fieldsText = missingFields.slice(0, 5).join('\n• ');
+                const moreText = missingFields.length > 5 ? `\n... و ${missingFields.length - 5} حقول أخرى` : '';
+
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'بيانات ناقصة!',
+                    html: `<div style="text-align: right; direction: rtl;">
+                        <p>يجب إدخال جميع البيانات قبل الحفظ.</p>
+                        <p><strong>الحقول المفقودة (${missingFields.length}):</strong></p>
+                        <p style="color: #e74c3c; font-size: 0.9rem;">• ${fieldsText}${moreText}</p>
+                    </div>`,
+                    confirmButtonColor: 'var(--primary-color)',
+                    confirmButtonText: 'حسناً'
+                });
+                return;
+            }
+
+            Swal.fire({
+                title: 'هل أنت متأكد؟',
+                text: "سيتم حفظ البيانات، يرجى المراجعة بدقة.",
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: 'var(--primary-color)',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'نعم، حفظ البيانات',
+                cancelButtonText: 'إلغاء'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    performSave();
+                }
+            })
+        }
+
+        function performSave() {
+            const btn = document.querySelector('button[onclick="saveData()"]');
+            const originalText = btn.innerText;
+            btn.disabled = true;
+            btn.innerText = "جاري الحفظ...";
+
+            let statsData = [
+                document.getElementById('gen_applied').value || 0,
+                document.getElementById('gen_present').value || 0,
+                document.getElementById('gen_success').value || 0
+            ];
+
+            subjectsConfig[currentGrade].forEach((_, index) => {
+                statsData.push(document.getElementById(`app_${index}`).value || 0);
+                statsData.push(document.getElementById(`pre_${index}`).value || 0);
+                statsData.push(document.getElementById(`suc_${index}`).value || 0);
+            });
+
+            fetch(SCRIPT_URL, {
+                method: "POST",
+                body: JSON.stringify({
+                    action: "saveStats",
+                    grade: currentGrade,
+                    schoolId: currentSchool.id,
+                    schoolName: currentSchool.name,
+                    statsData: statsData
+                })
+            })
+                .then(res => res.json())
+                .then(data => {
+                    Swal.fire(
+                        'تم الحفظ!',
+                        data.message,
+                        'success'
+                    );
+                    btn.disabled = false;
+                    btn.innerText = originalText;
+                })
+                .catch(err => {
+                    Swal.fire(
+                        'خطأ',
+                        'حدث خطأ أثناء الحفظ، حاول مرة أخرى.',
+                        'error'
+                    );
+                    btn.disabled = false;
+                    btn.innerText = originalText;
+                });
+        }
+    </script>
+</body>
+
+</html>
