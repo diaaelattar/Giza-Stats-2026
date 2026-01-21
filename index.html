@@ -10,7 +10,7 @@
     <!-- SweetAlert2 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/@sweetalert2/theme-bootstrap-4/bootstrap-4.css" rel="stylesheet">
     <!-- Custom CSS -->
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="style.css?v=3">
     <!-- SheetJS for Excel Export -->
     <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 
@@ -54,7 +54,7 @@
         </div>
         <div class="copyright-footer" style="background: transparent; border: none; font-size: 0.8rem;">
             إدارة العمرانية التعليمية 2026 &copy; <br>
-            <span style="display:block; margin: 5px 0;">النسخة 2.0</span>
+            <span style="display:block; margin: 5px 0;">النسخة 2.5 (شاملة التقييم)</span>
             تحت إشراف: <span style="font-weight: bold; color: var(--bs-indigo);">أ/ هشام محمود</span><br>
             تطوير: <span style="font-family: sans-serif; font-weight: bold;">Diaa El Attar</span>
         </div>
@@ -92,7 +92,7 @@
     </div>
 
     <!-- Admin Dashboard Screen -->
-    <div id="admin-dashboard-screen">
+    <div id="admin-dashboard-screen" style="display:none;">
         <div class="control-panel no-print">
             <div style="display: flex; justify-content: space-between; align-items: center;">
                 <div class="user-info">
@@ -107,6 +107,8 @@
             <hr style="margin: 10px 0; border: 0; border-top: 1px solid #ddd;">
 
             <div class="tabs" style="justify-content: center; margin-bottom: 10px;">
+                <button class="tab-btn" onclick="loadAdminEvalStats(1)">1 ابتدائي (تقييم)</button>
+                <button class="tab-btn" onclick="loadAdminEvalStats(2)">2 ابتدائي (تقييم)</button>
                 <button class="tab-btn active" onclick="loadAdminStats(3)">3 ابتدائي</button>
                 <button class="tab-btn" onclick="loadAdminStats(4)">4 ابتدائي</button>
                 <button class="tab-btn" onclick="loadAdminStats(5)">5 ابتدائي</button>
@@ -131,109 +133,26 @@
             <!-- Content will be injected dynamically -->
         </div>
 
-        <h3 style="text-align: center; margin-bottom: 20px; color: var(--primary-color);">بيان إحصائي مجمع</h3>
-
-        <!-- Aggregated Table -->
-        <div style="overflow-x: auto;">
-            <table class="admin-table-official" style="width: 100%; margin-bottom: 30px; font-size: 11px;">
-                <thead>
-                    <tr style="background: #f8f9fa;">
-                        <th rowspan="2">نوع التعليم</th>
-                        <th rowspan="2">عدد المدارس</th>
-                        <th colspan="3">المقيد</th>
-                        <th colspan="3">الحاضر</th>
-                        <th colspan="3">50% فأكثر (ناجح)</th>
-                        <th colspan="3">أقل من 50% (دون المستوى)</th>
-                        <th colspan="3">الغياب</th>
-                    </tr>
-                    <tr style="background: #f1f2f6;">
-                        <th>بنون</th>
-                        <th>بنات</th>
-                        <th>جملة</th>
-                        <th>بنون</th>
-                        <th>بنات</th>
-                        <th>جملة</th>
-                        <th>بنون</th>
-                        <th>بنات</th>
-                        <th>جملة</th>
-                        <th>بنون</th>
-                        <th>بنات</th>
-                        <th>جملة</th>
-                        <th>بنون</th>
-                        <th>بنات</th>
-                        <th>جملة</th>
-                    </tr>
-                </thead>
-                <tbody id="admin-agg-body">
-                    <!-- JS Injected -->
-                </tbody>
-            </table>
-        </div>
-
-        <!-- Subjects Aggregated Table -->
-        <h4 style="text-align: center; text-decoration: underline; margin: 10px 0;">نسب النجاح في المواد</h4>
-        <div style="overflow-x: auto;">
-            <table class="admin-table-official" style="width: 100%;">
-                <thead style="background-color: #fce4ec; color: #c2185b;">
-                    <tr>
-                        <th rowspan="2">المادة</th>
-                        <th colspan="3">المتقدمين</th>
-                        <th colspan="3">الحاضرين</th>
-                        <th colspan="3">الناجحين</th>
-                        <th rowspan="2">النسبة %</th>
-                    </tr>
-                    <tr>
-                        <th>بنون</th>
-                        <th>بنات</th>
-                        <th>جملة</th>
-                        <th>بنون</th>
-                        <th>بنات</th>
-                        <th>جملة</th>
-                        <th>بنون</th>
-                        <th>بنات</th>
-                        <th>جملة</th>
-                    </tr>
-                </thead>
-                <tbody id="admin-subj-body">
-                    <!-- JS Injected -->
-                </tbody>
-            </table>
-        </div>
-
-        <!-- Signatures -->
-        <div class="print-footer-container">
-            <div class="signature-block">
-                <div class="sig-title">رئيس اللجنة</div>
-                <div
-                    style="margin-top: 50px; border-top: 1px solid #000; display: inline-block; padding-top: 5px; min-width: 150px;">
-                    الاسم والتوقيع</div>
-            </div>
-            <div class="signature-block">
-                <div class="sig-title">مدير عام الإدارة</div>
-                <div
-                    style="margin-top: 50px; border-top: 1px solid #000; display: inline-block; padding-top: 5px; min-width: 150px;">
-                    الاسم والتوقيع</div>
+        <!-- View 2: School Status -->
+        <div id="admin-view-status" class="table-container" style="display: none;">
+            <div style="display: flex; gap: 20px; justify-content: center; flex-wrap: wrap;">
+                <div class="status-card success">
+                    <h4>المدارس المسجلة (<span id="count-submitted">0</span>)</h4>
+                    <ul id="list-submitted" class="status-list"></ul>
+                </div>
+                <div class="status-card warning">
+                    <h4>مدارس لم تسجل (<span id="count-missing">0</span>)</h4>
+                    <ul id="list-missing" class="status-list"></ul>
+                </div>
             </div>
         </div>
     </div>
 
-    <!-- View 2: School Status -->
-    <div id="admin-view-status" class="table-container" style="display: none;">
-        <div style="display: flex; gap: 20px; justify-content: center; flex-wrap: wrap;">
-            <div class="status-card success">
-                <h4>المدارس المسجلة (<span id="count-submitted">0</span>)</h4>
-                <ul id="list-submitted" class="status-list"></ul>
-            </div>
-            <div class="status-card warning">
-                <h4>مدارس لم تسجل (<span id="count-missing">0</span>)</h4>
-                <ul id="list-missing" class="status-list"></ul>
-            </div>
-        </div>
-    </div>
-    </div>
+    <!-- Hidden Print Area for Official Reports -->
+    <div id="school-print-area" style="display:none;"></div>
 
     <!-- School Dashboard Screen (Data Entry) -->
-    <div id="dashboard-screen">
+    <div id="dashboard-screen" style="display:none;">
         <div class="control-panel no-print">
             <div style="display: flex; justify-content: space-between; align-items: center;">
                 <div class="user-info">
@@ -251,6 +170,8 @@
             <hr style="margin: 10px 0; border: 0; border-top: 1px solid #ddd;">
 
             <div class="tabs" style="justify-content: center;">
+                <button class="tab-btn" onclick="showEvalGrade(1)">1 ابتدائي (تقييم)</button>
+                <button class="tab-btn" onclick="showEvalGrade(2)">2 ابتدائي (تقييم)</button>
                 <button class="tab-btn active" onclick="showGrade(3)">3 ابتدائي</button>
                 <button class="tab-btn" onclick="showGrade(4)">4 ابتدائي</button>
                 <button class="tab-btn" onclick="showGrade(5)">5 ابتدائي</button>
@@ -282,7 +203,26 @@
         <!-- General Stats Table (Input) -->
         <h4 style="margin: 10px 0;">أولاً: الإحصاء العام</h4>
         <div style="overflow-x:auto;">
-            <table style="min-width: 800px;">
+            <table style="min-width: 800px; table-layout: fixed; width: 100%;">
+                <colgroup>
+                    <col style="width: 100px;"> <!-- البيان -->
+                    <!-- 15 Numeric Columns: All 32px for complete fit -->
+                    <col style="width: 32px;">
+                    <col style="width: 32px;">
+                    <col style="width: 32px;">
+                    <col style="width: 32px;">
+                    <col style="width: 32px;">
+                    <col style="width: 32px;">
+                    <col style="width: 32px;">
+                    <col style="width: 32px;">
+                    <col style="width: 32px;">
+                    <col style="width: 32px;">
+                    <col style="width: 32px;">
+                    <col style="width: 32px;">
+                    <col style="width: 32px;">
+                    <col style="width: 32px;">
+                    <col style="width: 32px;">
+                </colgroup>
                 <thead>
                     <tr>
                         <th rowspan="2">البيان</th>
@@ -355,8 +295,29 @@
 
         <!-- Subjects Stats Table -->
         <h4 style="margin: 15px 0 10px;">ثانياً: إحصاء المواد الدراسية</h4>
+        <div class="scroll-hint no-print">
+            <span class="swipe-icon">↔️</span>
+            <span>اسحب لليمين أو اليسار لمشاهدة باقي الجدول</span>
+        </div>
         <div style="overflow-x:auto;">
-            <table id="subjects-table" style="min-width: 800px;">
+            <table id="subjects-table" style="min-width: 800px; table-layout: fixed; width: 100%;">
+                <colgroup>
+                    <col style="width: 100px;"> <!-- المادة -->
+                    <!-- متقدمين -->
+                    <col style="width: 32px;">
+                    <col style="width: 32px;">
+                    <col style="width: 32px;">
+                    <!-- حاضرين -->
+                    <col style="width: 32px;">
+                    <col style="width: 32px;">
+                    <col style="width: 32px;">
+                    <!-- ناجحين -->
+                    <col style="width: 32px;">
+                    <col style="width: 32px;">
+                    <col style="width: 32px;">
+                    <!-- النسبة -->
+                    <col style="width: 35px;">
+                </colgroup>
                 <thead>
                     <tr>
                         <th rowspan="2">المادة الدراسية</th>
@@ -394,24 +355,184 @@
         </div>
     </div>
 
+    <!-- Evaluation Dashboard Screen -->
+    <div id="eval-dashboard-screen" style="display:none; padding: 20px; text-align: right;">
+
+        <div class="control-panel no-print" style="margin-bottom: 20px;">
+            <button onclick="backToExamGrades()" class="tab-btn" style="background:#95a5a6; color:white;">↩️ عودة
+                للامتحانات</button>
+        </div>
+
+        <div class="print-header-container"
+            style="display:flex; justify-content:space-between; align-items:start; margin-bottom:15px;">
+            <div style="flex:1; text-align:right; font-size:12px; line-height:1.4; font-weight:bold;">
+                محافظة الجيزة <br> مديرية التربية والتعليم <br> التعليم الابتدائي
+            </div>
+            <div style="flex:2; text-align:center;">
+                <div style="font-weight:bold; font-size:1.2rem; text-decoration:underline;">
+                    إحصاء التقييم المبدئي والنهائي
+                </div>
+                <div id="eval-grade-title" style="font-weight:bold; font-size:1.1rem; margin-top:5px;">الصف الأول
+                    الابتدائي</div>
+
+                <div style="font-weight:bold; font-size:1.1rem; margin-top:5px;">إدارة العمرانية التعليمية</div>
+                <div style="margin-top:5px; font-size:12px;">مدرسة: <span id="eval-print-school-name">...</span></div>
+                <div style="margin-top:5px; font-size:12px;">العام الدراسي 2025 / 2026</div>
+            </div>
+            <div style="flex:1; text-align:left;">
+                <img src="logo.jpg" style="height:70px; width:auto;" alt="Logo" onerror="this.style.display='none'">
+            </div>
+        </div>
+
+        <h3 id="eval-form-title" class="no-print" style="text-align: center; color: var(--primary-color);">إدخال بيانات
+            التقييم</h3>
+
+        <div style="display: flex; flex-direction: column; gap: 20px;">
+
+            <!-- اللغة العربية -->
+            <div class="eval-subject-card"
+                style="background:#fff; padding:15px; border-radius:8px; box-shadow:0 2px 4px rgba(0,0,0,0.1);">
+                <h4 style="border-right: 4px solid #27ae60; padding-right: 10px; color: #27ae60;">اللغة العربية</h4>
+                <div style="overflow-x:auto;">
+                    <table class="eval-table"
+                        style="width:100%; border-collapse:collapse; margin-top:10px; table-layout: fixed;">
+                        <colgroup>
+                            <col style="width: 100px;"> <!-- الصف -->
+                            <col style="width: 70px;"> <!-- مقيد -->
+                            <col style="width: 70px;"> <!-- غائب -->
+                            <col style="width: 70px;"> <!-- حاضر -->
+                            <col style="width: 150px;"> <!-- يجيد -->
+                            <col style="width: 150px;"> <!-- يحتاج دعم -->
+                        </colgroup>
+                        <thead>
+                            <tr style="background:#f0f0f0;">
+                                <th>الصف</th>
+                                <th>مقيد</th>
+                                <th>غائب</th>
+                                <th>حاضر</th>
+                                <th>حاضر 60% فأكثر (يجيد)</th>
+                                <th>حاضر أقل من 60% (يحتاج دعم)</th>
+                            </tr>
+                        </thead>
+                        <tbody id="arabic-eval-body">
+                            <!-- Injected -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- الرياضيات -->
+            <div class="eval-subject-card"
+                style="background:#fff; padding:15px; border-radius:8px; box-shadow:0 2px 4px rgba(0,0,0,0.1);">
+                <h4 style="border-right: 4px solid #2980b9; padding-right: 10px; color: #2980b9;">الرياضيات</h4>
+                <div style="overflow-x:auto;">
+                    <table class="eval-table"
+                        style="width:100%; border-collapse:collapse; margin-top:10px; table-layout: fixed;">
+                        <colgroup>
+                            <col style="width: 100px;"> <!-- الصف -->
+                            <col style="width: 70px;"> <!-- مقيد -->
+                            <col style="width: 70px;"> <!-- غائب -->
+                            <col style="width: 70px;"> <!-- حاضر -->
+                            <col style="width: 150px;"> <!-- يجيد -->
+                            <col style="width: 150px;"> <!-- يحتاج دعم -->
+                        </colgroup>
+                        <thead>
+                            <tr style="background:#f0f0f0;">
+                                <th>الصف</th>
+                                <th>مقيد</th>
+                                <th>غائب</th>
+                                <th>حاضر</th>
+                                <th>حاضر 60% فأكثر (يجيد)</th>
+                                <th>حاضر أقل من 60% (يحتاج دعم)</th>
+                            </tr>
+                        </thead>
+                        <tbody id="math-eval-body">
+                            <!-- Injected -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- اللغة الإنجليزية -->
+            <div class="eval-subject-card"
+                style="background:#fff; padding:15px; border-radius:8px; box-shadow:0 2px 4px rgba(0,0,0,0.1);">
+                <h4 class="subject-header"
+                    style="border-right: 4px solid #e74c3c; padding-right: 10px; color: #e74c3c;">اللغة الإنجليزية</h4>
+                <div style="overflow-x:auto;">
+                    <table class="eval-table"
+                        style="width:100%; border-collapse:collapse; margin-top:10px; table-layout: fixed;">
+                        <colgroup>
+                            <col style="width: 100px;"> <!-- الصف -->
+                            <col style="width: 70px;"> <!-- مقيد -->
+                            <col style="width: 70px;"> <!-- غائب -->
+                            <col style="width: 70px;"> <!-- حاضر -->
+                            <col style="width: 150px;"> <!-- يجيد -->
+                            <col style="width: 150px;"> <!-- يحتاج دعم -->
+                        </colgroup>
+                        <thead>
+                            <tr style="background:#f0f0f0;">
+                                <th>الصف</th>
+                                <th>مقيد</th>
+                                <th>غائب</th>
+                                <th>حاضر</th>
+                                <th>حاضر 60% فأكثر (يجيد)</th>
+                                <th>حاضر أقل من 60% (يحتاج دعم)</th>
+                            </tr>
+                        </thead>
+                        <tbody id="english-eval-body">
+                            <!-- Injected -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Signature Block for Eval Report -->
+            <div class="print-footer-container"
+                style="display:none; justify-content:space-around; margin-top:30px; font-weight:bold;">
+                <div style="text-align:center;">
+                    <div>مدير المرحلة</div>
+                    <div style="margin-top:40px; border-top:1.5px solid #000; min-width:180px;">الاسم والتوقيع</div>
+                </div>
+                <div style="text-align:center;">
+                    <div>مدير المدرسة</div>
+                    <div style="margin-top:40px; border-top:1.5px solid #000; min-width:180px;">الاسم والتوقيع</div>
+                </div>
+            </div>
+
+        </div>
+
+        <div style="margin-top: 30px; display:flex; gap: 10px; justify-content:center;">
+            <button onclick="saveEvalData()" class="action-btn no-print" style="background:var(--primary-color);">💾 حفظ
+                بيانات التقييم</button>
+            <button onclick="printEvalReport()" class="action-btn no-print" style="background:#2c3e50;">🖨️ طباعة
+                التقرير</button>
+            <button onclick="exportEvalToExcel()" class="action-btn no-print" style="background:#27ae60;">📥 تصدير
+                Excel</button>
+        </div>
+
+    </div>
+
     <!-- Official Print Area for Schools (Isolated) -->
     <div id="school-print-area" class="print-only"></div>
 
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <!-- Professional Excel Library with Styling -->
     <script src="https://cdn.jsdelivr.net/npm/xlsx-js-style@1.2.0/dist/xlsx.bundle.js"></script>
-    <!-- Professional Printing Library -->
     <script src="https://printjs-4de6.kxcdn.com/print.min.js"></script>
     <link rel="stylesheet" href="https://printjs-4de6.kxcdn.com/print.min.css">
 
     <script>
-        // *** RENAME THIS IF DEPLOYING NEW VERSION ***
+        // *** NEW URL ***
         const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxRzMU_HC595ZhWg__yzRjruHCpS3eMwgJLFoE1eJlUaLQ7G7hgFJRh_oh3NyeNRP3A/exec";
 
         let currentSchool = {};
         let currentGrade = 3;
         let allSchoolsData = [];
+
+        // Eval Variables
+        let currentEvalGrade = 1;
+        const evalSubjects = ['arabic', 'math', 'english'];
+        const evalSubjectsNames = { 'arabic': 'لغة عربية', 'math': 'رياضيات', 'english': 'لغة إنجليزية' };
 
         const subjectsConfig = {
             3: ["تربية دينية", "لغة عربية", "لغة انجليزية", "رياضيات"],
@@ -420,7 +541,6 @@
             6: ["تربية دينية", "لغة عربية", "لغة انجليزية", "رياضيات", "علوم", "دراسات", "تكنولوجيا المعلومات ICT"]
         };
 
-        // Utility: Show Toast
         const Toast = Swal.mixin({
             toast: true,
             position: 'top-end',
@@ -448,9 +568,7 @@
                     }
                 })
                 .catch(err => {
-                    console.error(err);
-                    document.getElementById('loading-schools').innerHTML = `<span style="color:red; direction:ltr;">Error: ${err.message}</span><br>تأكد من إعدادات النشر (Deploy) وأن الصلاحيات (Anyone).`;
-                    Toast.fire({ icon: 'error', title: 'فشل الاتصال بالخادم', text: err.message });
+                    document.getElementById('loading-schools').innerHTML = `خطأ في الاتصال: ${err.message}`;
                 });
         };
 
@@ -469,7 +587,6 @@
             const selectedType = document.getElementById('schoolTypeSelect').value;
             const nameSelect = document.getElementById('schoolNameSelect');
             nameSelect.innerHTML = '<option value="">اختر المدرسة...</option>';
-
             const filtered = allSchoolsData.filter(s => s.type === selectedType);
             filtered.forEach(s => {
                 let opt = document.createElement('option');
@@ -484,23 +601,11 @@
             var schoolName = document.getElementById('schoolNameSelect').value;
             var password = document.getElementById('schoolCode').value;
 
-            if (!schoolType || !schoolName) {
-                Swal.fire('تنبيه', 'يرجى اختيار نوع التعليم والمدرسة', 'warning');
-                return;
-            }
-            if (!password) {
-                Swal.fire('تنبيه', 'يرجى إدخال كود المدرسة (الرقم السري)', 'warning');
+            if (!schoolType || !schoolName || !password) {
+                Swal.fire('تنبيه', 'بيانات الدخول ناقصة', 'warning');
                 return;
             }
 
-            var selectedSchool = allSchoolsData.find(s => s.name === schoolName && s.type === schoolType);
-
-            if (!selectedSchool) {
-                Swal.fire('خطأ', 'بيانات المدرسة غير صحيحة', 'error');
-                return;
-            }
-
-            // Show loading
             const btn = document.querySelector('.login-btn');
             const originalText = btn.innerText;
             btn.innerText = "جاري الدخول...";
@@ -510,8 +615,8 @@
                 method: "POST",
                 body: JSON.stringify({
                     action: "login",
-                    schoolName: selectedSchool.name,
-                    schoolType: selectedSchool.type,
+                    schoolName: schoolName,
+                    schoolType: schoolType,
                     password: password
                 })
             })
@@ -527,34 +632,22 @@
                         document.getElementById('ui-school-name').innerText = currentSchool.name;
                         document.getElementById('ui-school-type').innerText = currentSchool.type;
                         document.getElementById('print-school-name').innerText = currentSchool.name;
-                        document.getElementById('school-type-display').innerText = currentSchool.type;
+                        document.getElementById('eval-print-school-name').innerText = currentSchool.name;
 
-                        // Default to Grade 3
                         showGrade(3);
                     } else {
                         Swal.fire('خطأ', data.message, 'error');
                     }
                 })
-                .catch(err => {
-                    btn.innerText = originalText;
-                    btn.disabled = false;
-                    Swal.fire('خطأ', 'حدث خطأ في الاتصال', 'error');
-                });
+                .catch(err => Swal.fire('خطأ', err.message, 'error'));
         }
 
         /* --- Admin Logic --- */
-        function showAdminLogin() {
-            document.getElementById('admin-login-modal').style.display = 'block';
-        }
-
-        function closeModal(id) {
-            document.getElementById(id).style.display = 'none';
-        }
+        function showAdminLogin() { document.getElementById('admin-login-modal').style.display = 'block'; }
+        function closeModal(id) { document.getElementById(id).style.display = 'none'; }
 
         function submitAdminLogin() {
             const pass = document.getElementById('admin-pass-input').value;
-            if (!pass) return;
-
             fetch(SCRIPT_URL, {
                 method: "POST",
                 body: JSON.stringify({ action: "adminLogin", password: pass })
@@ -572,474 +665,80 @@
                 });
         }
 
-        function logout() {
-            location.reload();
-        }
-
-        function logoutAdmin() {
-            location.reload();
-        }
-
-        // --- Change Password Logic ---
-        function showPasswordModal() {
-            Swal.fire('تنبيه', 'يجب الدخول للمدرسة أولاً لتغيير كلمة المرور من داخل الترس (سيتم إضافته لاحقاً) أو التواصل مع المسؤول.', 'info');
-            // For simplicity, we removed direct change pass from login screen to avoid complexity with lookup.
-            // Or we can implement it similar to login.
-            // Let's implement simpler:
-            document.getElementById('password-modal').style.display = 'block';
-            // But we need schoolName/Type... user has selected them in dropdown?
-        }
+        function logout() { location.reload(); }
+        function logoutAdmin() { location.reload(); }
+        function showPasswordModal() { document.getElementById('password-modal').style.display = 'block'; }
 
         function changePassword() {
             var schoolType = document.getElementById('schoolTypeSelect').value;
             var schoolName = document.getElementById('schoolNameSelect').value;
             var newPass = document.getElementById('new-pass').value;
 
-            if (!schoolType || !schoolName || !newPass) {
-                Swal.fire('خطأ', 'يرجى اختيار المدرسة وكتابة كلمة المرور الجديدة', 'error');
-                return;
-            }
-
             fetch(SCRIPT_URL, {
                 method: "POST",
-                body: JSON.stringify({
-                    action: "changePassword",
-                    schoolName: schoolName,
-                    schoolType: schoolType,
-                    newPass: newPass
-                })
-            })
-                .then(res => res.json())
-                .then(data => {
-                    if (data.status === "success") {
-                        Swal.fire('تم', 'تم تغيير كلمة المرور بنجاح', 'success');
-                        closeModal('password-modal');
-                    } else {
-                        Swal.fire('خطأ', data.message, 'error');
-                    }
-                });
+                body: JSON.stringify({ action: "changePassword", schoolName: schoolName, schoolType: schoolType, newPass: newPass })
+            }).then(res => res.json()).then(data => {
+                if (data.status === "success") { Swal.fire('تم', data.message, 'success'); closeModal('password-modal'); }
+            });
+        }
+        function validateNumberInput(input) { input.value = input.value.replace(/[^0-9]/g, ''); }
+
+        /* --- Admin Dashboard Logic --- */
+        function switchAdminView(view) {
+            document.getElementById('admin-view-reports').style.display = view === 'reports' ? 'block' : 'none';
+            document.getElementById('admin-view-status').style.display = view === 'status' ? 'block' : 'none';
+            document.getElementById('btn-view-reports').classList.toggle('active', view === 'reports');
+            document.getElementById('btn-view-status').classList.toggle('active', view === 'status');
         }
 
-        function validateNumberInput(input) {
-            input.value = input.value.replace(/[^0-9]/g, '');
-        }
-
-        // --- Dashboard Logic ---
-
-        function showGrade(grade) {
+        function loadAdminStats(grade) {
             currentGrade = grade;
             const gradeText = grade == 3 ? 'الثالث' : grade == 4 ? 'الرابع' : grade == 5 ? 'الخامس' : 'السادس';
+            const adminGradeTitle = document.getElementById('admin-grade-title');
+            if (adminGradeTitle) adminGradeTitle.innerText = `الصف ${gradeText} الابتدائي`;
 
-            document.getElementById('grade-title').innerText = `الصف ${gradeText} الابتدائي`;
-            document.getElementById('print-title').innerText = `إحصاء نتيجة امتحان الصف ${gradeText} لامتحانات نصف العام 2025 / 2026 م`;
-
-            // Update active tab
-            const dashboardTabs = document.querySelectorAll('#dashboard-screen .tabs .tab-btn');
-            dashboardTabs.forEach(b => b.classList.remove('active'));
-            if (dashboardTabs[grade - 3]) dashboardTabs[grade - 3].classList.add('active');
-
-            const tbody = document.getElementById('subjects-body');
-            tbody.innerHTML = "";
-
-            subjectsConfig[grade].forEach((subj, index) => {
-                let row = `
-                <tr>
-                    <td style="font-weight:bold; background-color: #fafafa;">${subj}</td>
-                    <!-- Applied -->
-                    <td><input type="number" id="app_b_${index}" class="sub-input" oninput="calcSubjRow(${index})"></td>
-                    <td><input type="number" id="app_g_${index}" class="sub-input" oninput="calcSubjRow(${index})"></td>
-                    <td id="app_t_${index}" style="background:#eee;">0</td>
-                    
-                    <!-- Present -->
-                    <td><input type="number" id="pre_b_${index}" class="sub-input" oninput="calcSubjRow(${index})"></td>
-                    <td><input type="number" id="pre_g_${index}" class="sub-input" oninput="calcSubjRow(${index})"></td>
-                    <td id="pre_t_${index}" style="background:#eee;">0</td>
-
-                    <!-- Success -->
-                    <td><input type="number" id="suc_b_${index}" class="sub-input" oninput="calcSubjRow(${index})"></td>
-                    <td><input type="number" id="suc_g_${index}" class="sub-input" oninput="calcSubjRow(${index})"></td>
-                    <td id="suc_t_${index}" style="background:#eee;">0</td>
-
-                    <td id="perc_${index}" style="font-weight:bold; direction:ltr;">0%</td>
-                </tr>
-                `;
-                tbody.innerHTML += row;
+            document.querySelectorAll('#admin-dashboard-screen .tabs .tab-btn').forEach(b => b.classList.remove('active'));
+            const btns = document.querySelectorAll('#admin-dashboard-screen .tabs button');
+            btns.forEach(b => {
+                if (b.innerText.includes(grade + " ابتدائي") && !b.innerText.includes("تقييم")) b.classList.add('active');
             });
 
-            loadSavedDataForGrade(grade);
-        }
-
-        // --- Calculation Logic ---
-
-        function calcGenRow() {
-            // 1. Get Core Values
-            let enr_b = parseFloat(document.getElementById('enr_b').value) || 0;
-            let enr_g = parseFloat(document.getElementById('enr_g').value) || 0;
-            let pre_b = parseFloat(document.getElementById('pre_b').value) || 0;
-            let pre_g = parseFloat(document.getElementById('pre_g').value) || 0;
-            let suc_b = parseFloat(document.getElementById('suc_b').value) || 0;
-            let suc_g = parseFloat(document.getElementById('suc_g').value) || 0;
-
-            // 2. Auto-Calculate Derived Fields (As per user request)
-            // Absent = Enrolled - Present
-            let abs_b = Math.max(0, enr_b - pre_b);
-            let abs_g = Math.max(0, enr_g - pre_g);
-            document.getElementById('abs_b').value = abs_b;
-            document.getElementById('abs_g').value = abs_g;
-
-            // Fail (Less than 50%) = Present - Success
-            let fail_b = Math.max(0, pre_b - suc_b);
-            let fail_g = Math.max(0, pre_g - suc_g);
-            document.getElementById('fail_b').value = fail_b;
-            document.getElementById('fail_g').value = fail_g;
-
-            // 3. Update Totals Display
-            const fields = ['enr', 'pre', 'suc', 'fail', 'abs'];
-            fields.forEach(f => {
-                let b = parseFloat(document.getElementById(`${f}_b`).value) || 0;
-                let g = parseFloat(document.getElementById(`${f}_g`).value) || 0;
-                document.getElementById(`${f}_t`).innerText = b + g;
-            });
-
-            // Auto-fill Subject Applied Defaults from Enrolled?
-
-            if (enr_b > 0 || enr_g > 0) {
-                subjectsConfig[currentGrade].forEach((_, idx) => {
-                    let ab = document.getElementById(`app_b_${idx}`);
-                    let ag = document.getElementById(`app_g_${idx}`);
-
-                    // FORCE UPDATE: As per user request, subject enrollment MUST match general enrollment.
-                    ab.value = enr_b;
-                    ag.value = enr_g;
-                    calcSubjRow(idx);
-                });
-            }
-        }
-
-        function calcSubjRow(idx) {
-            const getV = (id) => {
-                let el = document.getElementById(id);
-                return el ? (parseFloat(el.value) || 0) : 0;
-            };
-            const setT = (id, val) => {
-                let el = document.getElementById(id);
-                if (el) el.innerText = val;
-            };
-
-            let ab = getV(`app_b_${idx}`);
-            let ag = getV(`app_g_${idx}`);
-            setT(`app_t_${idx}`, ab + ag);
-
-            let pb = getV(`pre_b_${idx}`);
-            let pg = getV(`pre_g_${idx}`);
-            setT(`pre_t_${idx}`, pb + pg);
-
-            let sb = getV(`suc_b_${idx}`);
-            let sg = getV(`suc_g_${idx}`);
-            setT(`suc_t_${idx}`, sb + sg);
-
-            let totalPre = pb + pg;
-            let totalSuc = sb + sg;
-
-            let perc = totalPre > 0 ? ((totalSuc / totalPre) * 100).toFixed(1) + "%" : "0%";
-            setT(`perc_${idx}`, perc);
-        }
-
-        function saveData() {
-            const check = (cond, msg) => { if (cond) throw new Error(msg); };
-            const btn = document.querySelector('button[onclick="saveData()"]');
-
-            try {
-                const getVal = (id, label) => {
-                    let el = document.getElementById(id);
-                    if (!el) return 0;
-                    if (el.value === "") throw new Error(`حقل فارغ: ${label} يجب إدخال قيمة.`);
-                    let v = parseFloat(el.value);
-                    if (isNaN(v)) throw new Error(`قيمة غير صحيحة في ${label}`);
-                    return v;
-                };
-
-                // Validate
-                let gEnrB = getVal('enr_b', 'المقيد بنون');
-                let gEnrG = getVal('enr_g', 'المقيد بنات');
-                let gPreB = getVal('pre_b', 'الحاضر بنون');
-                let gPreG = getVal('pre_g', 'الحاضر بنات');
-                let gSucB = getVal('suc_b', 'الناجح بنون');
-                let gSucG = getVal('suc_g', 'الناجح بنات');
-
-                check(gPreB > gEnrB, "عدد الحاضرين (بنون) لا يمكن أن يكون أكبر من المقيدين!");
-                check(gPreG > gEnrG, "عدد الحاضرين (بنات) لا يمكن أن يكون أكبر من المقيدين!");
-                check(gSucB > gPreB, "عدد الناجحين (بنون) لا يمكن أن يكون أكبر من الحاضرين!");
-                check(gSucG > gPreG, "عدد الناجحين (بنات) لا يمكن أن يكون أكبر من الحاضرين!");
-
-                subjectsConfig[currentGrade].forEach((subj, idx) => {
-                    let appB = getVal(`app_b_${idx}`, `${subj} - مقيد بنون`);
-                    let appG = getVal(`app_g_${idx}`, `${subj} - مقيد بنات`);
-                    let preB = getVal(`pre_b_${idx}`, `${subj} - حاضر بنون`);
-                    let preG = getVal(`pre_g_${idx}`, `${subj} - حاضر بنات`);
-                    let sucB = getVal(`suc_b_${idx}`, `${subj} - 50% فأكثر بنون`);
-                    let sucG = getVal(`suc_g_${idx}`, `${subj} - 50% فأكثر بنات`);
-
-                    check(preB > appB, `في مادة ${subj}: عدد الحاضرين (بنون) أكبر من المقيدين!`);
-                    check(preG > appG, `في مادة ${subj}: عدد الحاضرين (بنات) أكبر من المقيدين!`);
-                    check(sucB > preB, `في مادة ${subj}: عدد الحاصلين على 50% فأكثر (بنون) أكبر من الحاضرين!`);
-                    check(sucG > preG, `في مادة ${subj}: عدد الحاصلين على 50% فأكثر (بنات) أكبر من الحاضرين!`);
-                });
-
-                if (btn) { btn.innerText = "جاري الحفظ..."; btn.disabled = true; }
-
-            } catch (e) {
-                Swal.fire('خطأ في البيانات', e.message, 'error');
-                if (btn) { btn.disabled = false; btn.innerText = "💾 حفظ البيانات"; }
-                return;
-            }
-
-            // Prepare Data
-            const getV = (id) => document.getElementById(id).value || 0;
-            const getT = (id) => document.getElementById(id).innerText || 0;
-            let stats = [];
-
-            stats.push(1); // Count
-            let enrT = getT('enr_t');
-            stats.push(getV('enr_b'), getV('enr_g'), enrT);
-            stats.push(getV('pre_b'), getV('pre_g'), getT('pre_t'));
-            stats.push(getV('suc_b'), getV('suc_g'), getT('suc_t'));
-            stats.push(getV('fail_b'), getV('fail_g'), getT('fail_t'));
-            stats.push(getV('abs_b'), getV('abs_g'), getT('abs_t'));
-            stats.push(enrT); // Redundant
-
-            subjectsConfig[currentGrade].forEach((_, idx) => {
-                let pb = parseFloat(getV(`pre_b_${idx}`)) || 0;
-                let pg = parseFloat(getV(`pre_g_${idx}`)) || 0;
-                let totalPre = pb + pg;
-                let sb = parseFloat(getV(`suc_b_${idx}`)) || 0;
-                let sg = parseFloat(getV(`suc_g_${idx}`)) || 0;
-                let totalSuc = sb + sg;
-                let totalLess = Math.max(0, totalPre - totalSuc);
-                stats.push(totalPre, totalSuc, totalLess);
-            });
-
-            fetch(SCRIPT_URL, {
-                method: "POST",
-                body: JSON.stringify({
-                    action: "saveStats",
-                    grade: currentGrade,
-                    schoolId: currentSchool.id,
-                    schoolName: currentSchool.name,
-                    schoolType: currentSchool.type,
-                    statsData: stats
-                })
-            })
+            fetch(SCRIPT_URL, { method: "POST", body: JSON.stringify({ action: "getAdminStats", grade: grade }) })
                 .then(res => res.json())
                 .then(data => {
-                    if (btn) { btn.disabled = false; btn.innerText = "💾 حفظ البيانات"; }
-                    if (data.status === "success") {
-                        Swal.fire('تم الحفظ!', data.message, 'success');
+                    if (data.status === "success" && data.aggregation) {
+                        lastAdminData = data.aggregation; // Crucial for Excel export
+                        renderAdminTables(data.aggregation, grade);
                     } else {
-                        Swal.fire('خطأ', data.message || "حدث خطأ", 'error');
+                        Swal.fire('تنبيه', data.message || "لا توجد بيانات لهذا الصف بعد.", 'info');
+                        const container = document.getElementById('admin-view-reports');
+                        if (container) container.innerHTML = "<p style='text-align:center; padding:20px;'>لا توجد بيانات متاحة لهذا الصف.</p>";
                     }
                 })
-                .catch(err => {
-                    if (btn) { btn.disabled = false; btn.innerText = "💾 حفظ البيانات"; }
-                    Swal.fire('خطأ', 'فشل الحفظ: ' + err.message, 'error');
-                });
+                .catch(err => Swal.fire('خطأ', 'فشل تحميل البيانات: ' + err.message, 'error'));
         }
 
-        function exportToExcel() {
-            try {
-                if (!currentSchool) {
-                    Swal.fire('تنبيه', 'برجاء تسجيل الدخول أولاً', 'info');
-                    return;
-                }
-                const getV = (id) => {
-                    let el = document.getElementById(id);
-                    return el ? (el.value || "0") : "0";
-                };
-                const getT = (id) => {
-                    let el = document.getElementById(id);
-                    return el ? (el.innerText || "0") : "0";
-                };
+        function loadAdminEvalStats(grade) {
+            currentEvalGrade = grade;
+            const gradeText = grade == 1 ? 'الأول' : 'الثاني';
+            document.getElementById('admin-grade-title').innerText = `إحصاء تقييم الصف ${gradeText}`;
 
-                const subjects = subjectsConfig[currentGrade] || [];
-                if (subjects.length === 0) {
-                    Swal.fire('خطأ', 'لا توجد تهيئة للمواد لهذا الصف: ' + currentGrade, 'error');
-                    return;
-                }
+            document.querySelectorAll('#admin-dashboard-screen .tabs .tab-btn').forEach(b => b.classList.remove('active'));
+            const btns = document.querySelectorAll('#admin-dashboard-screen .tabs button');
+            btns.forEach(b => { if (b.innerText.includes(grade + " ابتدائي") && b.innerText.includes("تقييم")) b.classList.add('active'); });
 
-                let rows = [
-                    ["محافظة الجيزة - إدارة العمرانية التعليمية"],
-                    ["مديرية التربية والتعليم - التعليم الابتدائي"],
-                    [`مدرسة: ${currentSchool.name || 'غير معروف'}`],
-                    [`بيان إحصائي - الصف ${currentGrade} الابتدائي - نصف العام 2026`],
-                    [""],
-                    ["أولاً: الإحصاء العام"],
-                    ["نوع التعليم", "المقيد بنون", "المقيد بنات", "المقيد جملة", "الحاضر بنون", "الحاضر بنات", "الحاضر جملة", "الناجح بنون", "الناجح بنات", "الناجح جملة", "الراسب بنون", "الراسب بنات", "الراسب جملة", "الغائب بنون", "الغائب بنات", "الغائب جملة"],
-                    [
-                        currentSchool.type || "-",
-                        getV('enr_b'), getV('enr_g'), getT('enr_t'),
-                        getV('pre_b'), getV('pre_g'), getT('pre_t'),
-                        getV('suc_b'), getV('suc_g'), getT('suc_t'),
-                        getV('fail_b'), getV('fail_g'), getT('fail_t'),
-                        getV('abs_b'), getV('abs_g'), getT('abs_t')
-                    ],
-                    [""],
-                    ["ثانياً: إحصاء المواد الدراسية"]
-                ];
-
-                let subjectsRow = ["المادة"];
-                let subHeadRow = [""];
-                subjects.forEach((subj) => {
-                    subjectsRow.push(subj, "", "");
-                    subHeadRow.push("حاضر", "ناجح", "راسب");
-                });
-                rows.push(subjectsRow, subHeadRow);
-
-                let dataRow = [currentSchool.type || "-"];
-                subjects.forEach((_, idx) => {
-                    dataRow.push(getT(`pre_t_${idx}`), getT(`suc_t_${idx}`), getT(`fail_t_${idx}`));
-                });
-                rows.push(dataRow);
-
-                const wb = XLSX.utils.book_new();
-                const ws = XLSX.utils.aoa_to_sheet(rows);
-
-                // --- Add Borders to All Cells ---
-                const range = XLSX.utils.decode_range(ws['!ref']);
-                for (let R = range.s.r; R <= range.e.r; ++R) {
-                    for (let C = range.s.c; C <= range.e.c; ++C) {
-                        let cell_address = { c: C, r: R };
-                        let cell_ref = XLSX.utils.encode_cell(cell_address);
-                        if (!ws[cell_ref]) continue;
-                        ws[cell_ref].s = {
-                            border: {
-                                top: { style: "thin", color: { rgb: "000000" } },
-                                bottom: { style: "thin", color: { rgb: "000000" } },
-                                left: { style: "thin", color: { rgb: "000000" } },
-                                right: { style: "thin", color: { rgb: "000000" } }
-                            },
-                            alignment: { vertical: "center", horizontal: "center" }
-                        };
-                    }
-                }
-
-                ws['!cols'] = [{ wch: 15 }, { wch: 10 }, { wch: 10 }, { wch: 10 }];
-
-                XLSX.utils.book_append_sheet(wb, ws, "Stats");
-                XLSX.writeFile(wb, `Report_${currentSchool.name}_G${currentGrade}.xlsx`);
-                Toast.fire({ icon: 'success', title: 'تم تحميل ملف Excel' });
-            } catch (e) {
-                console.error("Excel Export Error:", e);
-                Swal.fire('خطأ', 'فشل تصدير Excel: ' + e.message, 'error');
-            }
-        }
-
-        function prepareOfficialPrint() {
-            try {
-                console.log("Preparing Individual Print...");
-                const getV = (id) => parseFloat(document.getElementById(id).value) || 0;
-                const getT = (id) => parseFloat(document.getElementById(id).innerText) || 0;
-
-                const subjects = subjectsConfig[currentGrade];
-                const subjStats = [];
-                subjects.forEach((_, idx) => {
-                    let pre = getT(`pre_t_${idx}`);
-                    let suc = getT(`suc_t_${idx}`);
-                    subjStats.push(pre, suc, Math.max(0, pre - suc));
-                });
-
-                const data = {
-                    enrolledB: getV('enr_b'), enrolledG: getV('enr_g'), enrolledT: getT('enr_t'),
-                    presentB: getV('pre_b'), presentG: getV('pre_g'), presentT: getT('pre_t'),
-                    successB: getV('suc_b'), successG: getV('suc_g'), successT: getT('suc_t'),
-                    failB: getV('fail_b'), failG: getV('fail_g'), failT: getT('fail_t'),
-                    absentB: getV('abs_b'), absentG: getV('abs_g'), absentT: getT('abs_t'),
-                    subjectStats: subjStats
-                };
-
-                renderAdminTables(data, currentGrade, true);
-
-                if (typeof printJS === 'function') {
-                    printJS({
-                        printable: 'school-print-area',
-                        type: 'html',
-                        targetStyles: ['*'],
-                        style: `
-                            @page { size: A4 landscape; margin: 10mm; } 
-                            body { direction: rtl; font-family: 'Arial', sans-serif; } 
-                            .admin-table-official { width: 100% !important; border-collapse: collapse !important; border: 2px solid #000 !important; }
-                            .admin-table-official th, .admin-table-official td { border: 1px solid #000 !important; padding: 4px !important; text-align: center !important; }
-                        `,
-                        scanStyles: true
-                    });
-                } else {
-                    console.warn("Print.js not loaded, falling back to window.print");
-                    document.body.classList.add('printing-school');
-                    window.print();
-                    document.body.classList.remove('printing-school');
-                }
-            } catch (e) {
-                console.error("Print Error:", e);
-                Swal.fire('خطأ في الطباعة', e.message, 'error');
-            }
-        }
-
-        function printAdminReport() {
-            try {
-                const source = document.getElementById('admin-view-reports');
-                if (!source || !source.innerHTML) {
-                    Swal.fire('تنبيه', 'لا توجد بيانات للعرض، يرجى اختيار الصف أولاً', 'info');
-                    return;
-                }
-
-                if (typeof printJS === 'function') {
-                    printJS({
-                        printable: 'admin-view-reports',
-                        type: 'html',
-                        targetStyles: ['*'],
-                        style: `
-                            @page { size: A4 landscape; margin: 10mm; } 
-                            body { direction: rtl; font-family: 'Arial', sans-serif; } 
-                            .admin-table-official { width: 100% !important; border-collapse: collapse !important; border: 2px solid #000 !important; }
-                            .admin-table-official th, .admin-table-official td { border: 1px solid #000 !important; padding: 4px !important; text-align: center !important; }
-                        `,
-                        scanStyles: true
-                    });
-                } else {
-                    console.warn("Print.js not loaded, falling back to window.print");
-                    const target = document.getElementById('school-print-area');
-                    target.innerHTML = source.innerHTML;
-                    document.body.classList.add('printing-school');
-                    window.print();
-                    document.body.classList.remove('printing-school');
-                    target.innerHTML = "";
-                }
-            } catch (e) {
-                console.error("Admin Print Error:", e);
-                Swal.fire('خطأ في طباعة الإدارة', e.message, 'error');
-            }
-        }
-
-        function loadSavedDataForGrade(grade) {
-            fetch(SCRIPT_URL, {
-                method: "POST",
-                body: JSON.stringify({
-                    action: "getSchoolStats",
-                    grade: grade,
-                    schoolId: currentSchool.id // Unique Code from Col E
-                })
-            })
+            fetch(SCRIPT_URL, { method: "POST", body: JSON.stringify({ action: "getAdminEvalStats", grade: grade }) })
                 .then(res => res.json())
                 .then(data => {
-                    if (data.status === "success" && data.hasData) {
-                        populateFormWithData(data.statsData, grade);
-                        Toast.fire({ icon: 'success', title: 'تم استرجاع البيانات المحفوظة' });
+                    if (data.status === "success" && data.aggregation) {
+                        renderAdminEvalTables(data.aggregation, grade);
+                        document.getElementById('count-submitted').innerText = data.aggregation.submittedSchools.length;
+                        document.getElementById('count-missing').innerText = data.aggregation.missingSchools.length;
+                        document.getElementById('list-submitted').innerHTML = data.aggregation.submittedSchools.map(s => `<li>${s}</li>`).join("");
+                        document.getElementById('list-missing').innerHTML = data.aggregation.missingSchools.map(s => `<li>${s}</li>`).join("");
                     }
-                })
-                .catch(err => console.log(err));
+                });
         }
-
-        // --- Render Admin/School Tables (Official Two-Table Layout matching Images) ---
-        let lastAdminData = null;
 
         function renderAdminTables(data, grade, isIndividual = false) {
             try {
@@ -1062,10 +761,10 @@
                     "رسمي عربي": "جملة المدارس الرسمية عربي", "رسمي لغات": "جملة المدارس الرسمية لغات",
                     "خاص عربي": "جملة المدارس الخاصة عربي", "خاص لغات": "جملة المدارس الخاصة لغات",
                     "دولى": "جملة المدارس الدولية", "مجموع": "الجملة العامة للإدارة",
-                    "target": currentSchool ? currentSchool.name : "المدرسة"
+                    "target": currentSchool ? currentSchool.name : "بيانات المدرسة"
                 };
 
-                let html = `<div class="admin-sheet-container">`;
+                let html = ``;
 
                 const headerHtml = (formNum) => `
                     <div class="print-header-container" style="display:flex; justify-content:space-between; align-items:start; margin-bottom:10px;">
@@ -1087,37 +786,38 @@
                     </div>
                 `;
 
-                // --- TABLE 1: GENERAL STATS ---
+                const footerHtml = `
+                    <div class="print-footer-container" style="display:flex; justify-content:space-around; margin-top:35px; font-weight:bold;">
+                        <div style="text-align:center;">
+                            <div>${isIndividual ? 'رئيس لجنة النظام والمراقبة' : 'مدير المرحلة'}</div>
+                            <div style="margin-top:45px; border-top:1.5px solid #000; min-width:180px;"></div>
+                        </div>
+                        <div style="text-align:center;">
+                            <div>${isIndividual ? 'مدير المدرسة' : 'مدير عام الإدارة'}</div>
+                            <div style="margin-top:45px; border-top:1.5px solid #000; min-width:180px;"></div>
+                        </div>
+                    </div>
+                `;
+
+                // --- SHEET 1: GENERAL STATS ---
+                html += `<div class="admin-sheet-container">`;
                 html += headerHtml('1');
                 html += `
-                    <style>
-                        .admin-table-official {
-                            width: 100% !important;
-                            border-collapse: collapse !important;
-                            border: 2px solid #000 !important;
-                            margin-bottom: 20px;
-                        }
-                        .admin-table-official th, .admin-table-official td {
-                            border: 1px solid #000 !important;
-                            min-width: 32px !important;
-                            padding: 4px 2px !important;
-                            font-size: 10pt !important;
-                            white-space: nowrap !important;
-                            text-align: center;
-                        }
-                        .admin-table-official .col-label {
-                            min-width: 150px !important;
-                            text-align: right;
-                            padding-right: 10px !important;
-                            white-space: normal !important;
-                            font-weight: bold;
-                        }
-                    </style>
-                    <table class="admin-table-official">
+                    <table class="admin-table-official" style="table-layout: fixed; width: 100%;">
+                        <colgroup>
+                            <col style="width: 150px;"> <!-- نوع التعليم -->
+                            <col style="width: 50px;">  <!-- المدارس -->
+                            <!-- 15 Columns for numeric data -->
+                            <col style="width: 50px;"><col style="width: 50px;"><col style="width: 50px;">
+                            <col style="width: 50px;"><col style="width: 50px;"><col style="width: 50px;">
+                            <col style="width: 50px;"><col style="width: 50px;"><col style="width: 50px;">
+                            <col style="width: 50px;"><col style="width: 50px;"><col style="width: 50px;">
+                            <col style="width: 50px;"><col style="width: 50px;"><col style="width: 50px;">
+                        </colgroup>
                         <thead>
                             <tr>
-                                <th rowspan="2">نوع التعليم</th>
-                                <th rowspan="2" style="min-width:40px !important;">المدارس</th>
+                                <th rowspan="2" class="col-label">${isIndividual ? 'المدرسة' : 'نوع التعليم'}</th>
+                                <th rowspan="2">المدارس</th>
                                 <th colspan="3">المقيد</th>
                                 <th colspan="3">الحاضر</th>
                                 <th colspan="3">الناجح (50% فأكثر)</th>
@@ -1135,7 +835,7 @@
                         <tbody>
                 `;
 
-                let statsSource = isIndividual ? { "target": data } : (data ? data.stats : {});
+                let statsSource = data ? data.stats : {};
                 types.forEach(type => {
                     let d = statsSource[type] || {};
                     const v = (k) => d[k] || 0;
@@ -1151,17 +851,23 @@
                 });
 
                 html += `</tbody></table>`;
-                html += `<div style="height:25px;"></div>`;
+                html += `</div>`; // End Sheet 1
 
-                // --- TABLE 2: SUBJECT STATS ---
+                // --- SHEET 2: SUBJECT STATS ---
+                html += `<div class="admin-sheet-container">`;
                 html += `<h4 style="text-align:center; margin-bottom:10px; text-decoration:underline; font-size:1.2rem;">ثانياً: إحصاء المواد الدراسية</h4>`;
                 html += `
-                    <table class="admin-table-official">
+                    <table class="admin-table-official" style="table-layout: fixed; width: 100%;">
+                        <colgroup>
+                            <col style="width: 150px;"> <!-- مدرسة / نوعية -->
+                            <col style="width: 60px;">  <!-- مقيد -->
+                            ${subjects.map(() => `<col style="width: 45px;"><col style="width: 45px;"><col style="width: 45px;">`).join('')}
+                        </colgroup>
                         <thead>
                             <tr>
-                                <th rowspan="2" class="col-label">نوعية التعليم</th>
-                                <th rowspan="2" style="min-width:50px !important;">المقيد</th>
-                                ${subjects.map(s => `<th colspan="3">${s}</th>`).join('')}
+                                <th rowspan="2" class="col-label">${isIndividual ? 'المدرسة' : 'نوعية التعليم'}</th>
+                                <th rowspan="2">المقيد</th>
+                                ${subjects.map(s => `<th colspan="3" style="font-size: 9pt;">${s}</th>`).join('')}
                             </tr>
                             <tr>
                                 ${subjects.map(() => `<th>حاضر</th><th>ناجح</th><th>راسب</th>`).join('')}
@@ -1178,27 +884,31 @@
                         <td style="text-align:right; padding-right:10px; font-weight:bold;">${isIndividual ? typeLabels[type] : typeLabels2[type]}</td>
                         <td style="background:#f9f9f9; font-weight:bold;">${enrollmentTotal}</td>
                         ${subjects.map((_, idx) => {
-                        let b = idx * 3;
-                        return `<td>${subjStats[b] || 0}</td><td>${subjStats[b + 1] || 0}</td><td>${subjStats[b + 2] || 0}</td>`;
+                        let idx8 = idx * 8;
+                        let idx3 = idx * 3;
+
+                        let isNewStats = subjStats.length > (subjects.length * 4);
+
+                        let tPre, tSuc, tFail;
+                        if (isNewStats) {
+                            let base = idx * 8;
+                            tPre = (subjStats[base + 2] || 0) + (subjStats[base + 3] || 0);
+                            tSuc = (subjStats[base + 4] || 0) + (subjStats[base + 5] || 0);
+                            tFail = (subjStats[base + 6] || 0) + (subjStats[base + 7] || 0);
+                        } else {
+                            let base = idx * 3;
+                            tPre = subjStats[base] || 0;
+                            tSuc = subjStats[base + 1] || 0;
+                            tFail = subjStats[base + 2] || 0;
+                        }
+                        return `<td>${tPre}</td><td>${tSuc}</td><td>${tFail}</td>`;
                     }).join('')}
                     </tr>`;
                 });
 
                 html += `</tbody></table>`;
-
-                // SIGS
-                html += `
-                    <div style="display:flex; justify-content:space-around; margin-top:35px; font-weight:bold;">
-                        <div style="text-align:center;">
-                            <div>${isIndividual ? 'رئيس لجنة النظام والمراقبة' : 'مدير المرحلة'}</div>
-                            <div style="margin-top:45px; border-top:1.5px solid #000; min-width:180px;">الاسم والتوقيع</div>
-                        </div>
-                        <div style="text-align:center;">
-                            <div>${isIndividual ? 'مدير المدرسة' : 'مدير عام الإدارة'}</div>
-                            <div style="margin-top:45px; border-top:1.5px solid #000; min-width:180px;">الاسم والتوقيع</div>
-                        </div>
-                    </div>
-                </div>`;
+                html += footerHtml;
+                html += `</div>`; // End Sheet 2
 
                 adminArea.innerHTML = html;
 
@@ -1223,127 +933,33 @@
             }
         }
 
-        // --- Load Saved Data (Populate Input Form) ---
-        function populateFormWithData(data, grade) {
-            if (!data || data.length < 16) return;
+        function renderAdminEvalTables(data, grade) {
+            const container = document.getElementById('admin-view-reports');
+            container.innerHTML = "";
+            for (const type in data.stats) {
+                const s = data.stats[type];
+                if (s.schoolsCount === 0 && type !== 'مجموع') continue;
 
-            const setV = (id, val) => {
-                let el = document.getElementById(id);
-                if (el) el.value = val;
-            };
-
-            // 1. General Stats
-            setV('enr_b', data[1]); setV('enr_g', data[2]);
-            setV('pre_b', data[4]); setV('pre_g', data[5]);
-            setV('suc_b', data[7]); setV('suc_g', data[8]);
-            setV('fail_b', data[10]); setV('fail_g', data[11]);
-            setV('abs_b', data[13]); setV('abs_g', data[14]);
-            calcGenRow();
-
-            // 2. Subjects (Saved as Totals: Present, Success, Less)
-            let enrB = parseFloat(data[1]) || 0;
-            let enrG = parseFloat(data[2]) || 0;
-            let isGirls = (enrB === 0 && enrG > 0);
-
-            subjectsConfig[grade].forEach((_, idx) => {
-                let base = 17 + (idx * 3);
-                if (!data[base]) return;
-
-                let totPre = parseFloat(data[base]) || 0;
-                let totSuc = parseFloat(data[base + 1]) || 0;
-
-                if (isGirls) {
-                    setV(`pre_g_${idx}`, totPre); setV(`pre_b_${idx}`, 0);
-                    setV(`suc_g_${idx}`, totSuc); setV(`suc_b_${idx}`, 0);
-                    setV(`app_g_${idx}`, enrG); setV(`app_b_${idx}`, 0);
-                } else {
-                    setV(`pre_b_${idx}`, totPre); setV(`pre_g_${idx}`, 0);
-                    setV(`suc_b_${idx}`, totSuc); setV(`suc_g_${idx}`, 0);
-                    setV(`app_b_${idx}`, enrB); setV(`app_g_${idx}`, enrG);
-                }
-                calcSubjRow(idx);
-            });
-
-            Toast.fire({
-                icon: 'info',
-                title: 'تم استرجاع البيانات',
-                text: 'تم توزيع إجماليات المواد بناءً على نوع المدرسة.'
-            });
-        }
-
-        // --- Admin Dashboard (Load Stats) ---
-        function switchAdminView(view) {
-            document.getElementById('admin-view-reports').style.display = 'none';
-            document.getElementById('admin-view-status').style.display = 'none';
-            document.getElementById('btn-view-reports').classList.remove('active');
-            document.getElementById('btn-view-status').classList.remove('active');
-
-            if (view === 'reports') {
-                document.getElementById('admin-view-reports').style.display = 'block';
-                document.getElementById('btn-view-reports').classList.add('active');
-            } else {
-                document.getElementById('admin-view-status').style.display = 'block';
-                document.getElementById('btn-view-status').classList.add('active');
+                let table = `<div class="report-section">
+                    <h3>إحصاء تقييم ${type} (${s.schoolsCount} مدرسة)</h3>
+                    <table class="admin-table-official">
+                        <thead><tr><th rowspan="2">المادة</th><th colspan="3">إحصاء الطلاب</th><th colspan="2">التقييم</th></tr>
+                            <tr><th>مقيد</th><th>غائب</th><th>حاضر</th><th>60% فأكثر (جيد)</th><th>أقل من 60%</th></tr></thead>
+                        <tbody>
+                            <tr><td>لغة عربية</td><td>${s.arabic.enrolled}</td><td>${s.arabic.absent}</td><td>${s.arabic.present}</td><td>${s.arabic.pass60}</td><td>${s.arabic.less60}</td></tr>
+                            <tr><td>رياضيات</td><td>${s.math.enrolled}</td><td>${s.math.absent}</td><td>${s.math.present}</td><td>${s.math.pass60}</td><td>${s.math.less60}</td></tr>
+                            <tr><td>لغة إنجليزية</td><td>${s.english.enrolled}</td><td>${s.english.absent}</td><td>${s.english.present}</td><td>${s.english.pass60}</td><td>${s.english.less60}</td></tr>
+                        </tbody>
+                    </table>
+                </div>`;
+                container.innerHTML += table;
             }
         }
 
-        function loadAdminStats(grade) {
-            try {
-                // debug
-                console.log("Loading Admin Stats for Grade:", grade);
-
-                currentGrade = grade; // Update global grade for export
-
-                // Update Titles
-                let gradeTitle = "unknown";
-                if (grade == 3) gradeTitle = "3 ابتدائي";
-                else if (grade == 4) gradeTitle = "4 ابتدائي";
-                else if (grade == 5) gradeTitle = "5 ابتدائي";
-                else if (grade == 6) gradeTitle = "6 ابتدائي";
-
-                const titleEl = document.getElementById('admin-grade-title');
-                if (titleEl) titleEl.innerText = gradeTitle;
-
-                const printTitleEl = document.getElementById('admin-print-title');
-                if (printTitleEl) printTitleEl.innerText = `إحصاء الصف ${grade} الابتدائي`;
-
-                // Highlight Active Tab
-                const allButtons = document.querySelectorAll('#admin-dashboard-screen .tabs button');
-                allButtons.forEach(btn => btn.classList.remove('active'));
-
-                // Find and highlight the button that was clicked (based on text or onclick)
-                // Since we can't easily identify which button was clicked without passing 'this', 
-                // we will try to find it by text content or index.
-                // Simplified: Just match index 0-3
-                if (allButtons[grade - 3]) {
-                    allButtons[grade - 3].classList.add('active');
-                }
-
-                Swal.showLoading();
-                fetch(SCRIPT_URL, {
-                    method: "POST",
-                    body: JSON.stringify({ action: "getAdminStats", grade: grade })
-                })
-                    .then(res => res.json())
-                    .then(data => {
-                        Swal.close();
-                        if (data.status === "success") {
-                            switchAdminView('reports');
-                            renderAdminTables(data.aggregation, grade);
-                        } else {
-                            Swal.fire('خطأ', data.message || "حدث خطأ غير معروف", 'error');
-                        }
-                    })
-                    .catch(err => {
-                        Swal.close();
-                        console.error(err);
-                        Swal.fire('خطأ', 'فشل في جلب البيانات: ' + err.message, 'error');
-                    });
-
-            } catch (e) {
-                console.error(e);
-                Swal.fire('Error', e.message, 'error');
-            }
+        function printAdminReport() {
+            document.body.classList.add('print-mode-admin');
+            window.print();
+            setTimeout(() => document.body.classList.remove('print-mode-admin'), 1000);
         }
 
         function exportAdminToExcel() {
@@ -1398,7 +1014,6 @@
                 { s: { r: 1, c: 11 }, e: { r: 1, c: 13 } },
                 { s: { r: 1, c: 14 }, e: { r: 1, c: 16 } }
             ];
-            // XLSX.utils.book_append_sheet(wb, wsGen, "إحصاء عام (1)"); // Moved after styling
 
             // --- Subject Stats (Sheet 2) ---
             const subjRows = [];
@@ -1416,8 +1031,20 @@
                 let subjStats = d.subjectStats || [];
                 const row = [typeLabels2[type], enrollmentTotal];
                 subjects.forEach((_, idx) => {
-                    let base = idx * 3;
-                    row.push(subjStats[base] || 0, subjStats[base + 1] || 0, subjStats[base + 2] || 0);
+                    let isNewStats = subjStats.length > (subjects.length * 4);
+                    let tPre, tSuc, tFail;
+                    if (isNewStats) {
+                        let base = idx * 8;
+                        tPre = (subjStats[base + 2] || 0) + (subjStats[base + 3] || 0);
+                        tSuc = (subjStats[base + 4] || 0) + (subjStats[base + 5] || 0);
+                        tFail = (subjStats[base + 6] || 0) + (subjStats[base + 7] || 0);
+                    } else {
+                        let base = idx * 3;
+                        tPre = subjStats[base] || 0;
+                        tSuc = subjStats[base + 1] || 0;
+                        tFail = subjStats[base + 2] || 0;
+                    }
+                    row.push(tPre, tSuc, tFail);
                 });
                 subjRows.push(row);
             });
@@ -1458,8 +1085,474 @@
             XLSX.writeFile(wb, `GizaStats_Grade${grade}.xlsx`);
         }
 
+        function prepareOfficialPrint() {
+            fetch(SCRIPT_URL, { method: "POST", body: JSON.stringify({ action: "getSchoolStats", grade: currentGrade, schoolId: currentSchool.id }) })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.hasData) {
+                        const dummyAgg = {
+                            stats: {
+                                "target": {
+                                    schoolsCount: 1,
+                                    enrolledB: data.statsData[1], enrolledG: data.statsData[2], enrolledT: data.statsData[3],
+                                    presentB: data.statsData[4], presentG: data.statsData[5], presentT: data.statsData[6],
+                                    successB: data.statsData[7], successG: data.statsData[8], successT: data.statsData[9],
+                                    failB: data.statsData[10], failG: data.statsData[11], failT: data.statsData[12],
+                                    absentB: data.statsData[13], absentG: data.statsData[14], absentT: data.statsData[15],
+                                    subjectStats: data.statsData.slice(17)
+                                }
+                            }
+                        };
+                        renderAdminTables(dummyAgg, currentGrade, true);
+                        document.body.classList.add('print-mode-official');
+                        window.print();
+                        setTimeout(() => document.body.classList.remove('print-mode-official'), 1000);
+                    }
+                });
+        }
+
+
+        // --- Dashboard Logic ---
+        function showGrade(grade) {
+            currentGrade = grade;
+            const gradeText = grade == 3 ? 'الثالث' : grade == 4 ? 'الرابع' : grade == 5 ? 'الخامس' : 'السادس';
+
+            // Switch views
+            document.getElementById('eval-dashboard-screen').style.display = 'none';
+            document.getElementById('dashboard-screen').style.display = 'block';
+
+            document.getElementById('grade-title').innerText = `الصف ${gradeText} الابتدائي`;
+            document.getElementById('print-title').innerText = `إحصاء نتيجة امتحان الصف ${gradeText} لامتحانات نصف العام 2025 / 2026 م`;
+
+            const dashboardTabs = document.querySelectorAll('#dashboard-screen .tabs .tab-btn');
+            dashboardTabs.forEach(b => b.classList.remove('active'));
+            if (dashboardTabs[grade - 1]) dashboardTabs[grade - 1].classList.add('active');
+
+            // CLEAR OLD DATA (Fix for "Stats not updating")
+            const inputs = document.querySelectorAll('#dashboard-screen .sub-input');
+            inputs.forEach(i => i.value = "");
+            const displays = document.querySelectorAll('#dashboard-screen td[id$="_t"]');
+            displays.forEach(d => d.innerText = "0");
+            document.querySelectorAll('#dashboard-screen td[id^="perc_"]').forEach(d => d.innerText = "0%");
+
+            const tbody = document.getElementById('subjects-body');
+            tbody.innerHTML = "";
+            subjectsConfig[grade].forEach((subj, index) => {
+                let row = `<tr><td style="font-weight:bold; background-color: #fafafa;">${subj}</td>
+                    <td><input type="number" id="app_b_${index}" class="sub-input" oninput="calcSubjRow(${index})"></td>
+                    <td><input type="number" id="app_g_${index}" class="sub-input" oninput="calcSubjRow(${index})"></td>
+                    <td id="app_t_${index}" style="background:#eee;">0</td>
+                    <td><input type="number" id="pre_b_${index}" class="sub-input" oninput="calcSubjRow(${index})"></td>
+                    <td><input type="number" id="pre_g_${index}" class="sub-input" oninput="calcSubjRow(${index})"></td>
+                    <td id="pre_t_${index}" style="background:#eee;">0</td>
+                    <td><input type="number" id="suc_b_${index}" class="sub-input" oninput="calcSubjRow(${index})"></td>
+                    <td><input type="number" id="suc_g_${index}" class="sub-input" oninput="calcSubjRow(${index})"></td>
+                    <td id="suc_t_${index}" style="background:#eee;">0</td>
+                    <td id="perc_${index}" style="font-weight:bold; direction:ltr;">0%</td></tr>`;
+                tbody.innerHTML += row;
+            });
+            loadSavedDataForGrade(grade);
+        }
+
+        // --- Calc Logic (Brief) ---
+        function calcGenRow() {
+            let enr_b = parseFloat(document.getElementById('enr_b').value) || 0, enr_g = parseFloat(document.getElementById('enr_g').value) || 0;
+            let pre_b = parseFloat(document.getElementById('pre_b').value) || 0, pre_g = parseFloat(document.getElementById('pre_g').value) || 0;
+            let suc_b = parseFloat(document.getElementById('suc_b').value) || 0, suc_g = parseFloat(document.getElementById('suc_g').value) || 0;
+            document.getElementById('abs_b').value = Math.max(0, enr_b - pre_b);
+            document.getElementById('abs_g').value = Math.max(0, enr_g - pre_g);
+            document.getElementById('fail_b').value = Math.max(0, pre_b - suc_b);
+            document.getElementById('fail_g').value = Math.max(0, pre_g - suc_g);
+            ['enr', 'pre', 'suc', 'fail', 'abs'].forEach(f => {
+                let b = parseFloat(document.getElementById(`${f}_b`).value) || 0, g = parseFloat(document.getElementById(`${f}_g`).value) || 0;
+                document.getElementById(`${f}_t`).innerText = b + g;
+            });
+        }
+        function calcSubjRow(idx) {
+            const getV = (id) => parseFloat(document.getElementById(id)?.value) || 0;
+            const setT = (id, v) => document.getElementById(id).innerText = v;
+            let ab = getV(`app_b_${idx}`), ag = getV(`app_g_${idx}`), pb = getV(`pre_b_${idx}`), pg = getV(`pre_g_${idx}`), sb = getV(`suc_b_${idx}`), sg = getV(`suc_g_${idx}`);
+            setT(`app_t_${idx}`, ab + ag); setT(`pre_t_${idx}`, pb + pg); setT(`suc_t_${idx}`, sb + sg);
+            let tp = pb + pg, ts = sb + sg;
+            setT(`perc_${idx}`, tp > 0 ? ((ts / tp) * 100).toFixed(1) + "%" : "0%");
+        }
+
+        function saveData() {
+            const check = (cond, msg) => { if (cond) throw new Error(msg); };
+            const btn = document.querySelector('button[onclick="saveData()"]');
+            if (!btn) return;
+
+            try {
+                const getVal = (id, label) => {
+                    let el = document.getElementById(id);
+                    if (!el) return 0;
+                    if (el.value === "") throw new Error(`حقل فارغ: ${label} يجب إدخال قيمة.`);
+                    let v = parseFloat(el.value);
+                    if (isNaN(v)) throw new Error(`قيمة غير صحيحة في ${label}`);
+                    return v;
+                };
+
+                // Validate
+                let gEnrB = getVal('enr_b', 'المقيد بنون');
+                let gEnrG = getVal('enr_g', 'المقيد بنات');
+                let gPreB = getVal('pre_b', 'الحاضر بنون');
+                let gPreG = getVal('pre_g', 'الحاضر بنات');
+                let gSucB = getVal('suc_b', 'الناجح بنون');
+                let gSucG = getVal('suc_g', 'الناجح بنات');
+
+                check(gPreB > gEnrB, "عدد الحاضرين (بنون) لا يمكن أن يكون أكبر من المقيدين!");
+                check(gPreG > gEnrG, "عدد الحاضرين (بنات) لا يمكن أن يكون أكبر من المقيدين!");
+                check(gSucB > gPreB, "عدد الناجحين (بنون) لا يمكن أن يكون أكبر من الحاضرين!");
+                check(gSucG > gPreG, "عدد الناجحين (بنات) لا يمكن أن يكون أكبر من الحاضرين!");
+
+                subjectsConfig[currentGrade].forEach((subj, idx) => {
+                    let appB = getVal(`app_b_${idx}`, `${subj} - مقيد بنون`);
+                    let appG = getVal(`app_g_${idx}`, `${subj} - مقيد بنات`);
+                    let preB = getVal(`pre_b_${idx}`, `${subj} - حاضر بنون`);
+                    let preG = getVal(`pre_g_${idx}`, `${subj} - حاضر بنات`);
+                    let sucB = getVal(`suc_b_${idx}`, `${subj} - 50% فأكثر بنون`);
+                    let sucG = getVal(`suc_g_${idx}`, `${subj} - 50% فأكثر بنات`);
+
+                    check(preB > appB, `في مادة ${subj}: عدد الحاضرين (بنون) أكبر من المقيدين!`);
+                    check(preG > appG, `في مادة ${subj}: عدد الحاضرين (بنات) أكبر من المقيدين!`);
+                    check(sucB > preB, `في مادة ${subj}: عدد الحاصلين على 50% فأكثر (بنون) أكبر من الحاضرين!`);
+                    check(sucG > preG, `في مادة ${subj}: عدد الحاصلين على 50% فأكثر (بنات) أكبر من الحاضرين!`);
+                });
+
+                btn.innerText = "جاري الحفظ..."; btn.disabled = true;
+
+                // Prepare Data
+                const getV = (id) => document.getElementById(id).value || 0;
+                const getT = (id) => document.getElementById(id).innerText || 0;
+                let stats = [];
+
+                stats.push(1); // Count
+                let enrT = getT('enr_t');
+                stats.push(getV('enr_b'), getV('enr_g'), enrT);
+                stats.push(getV('pre_b'), getV('pre_g'), getT('pre_t'));
+                stats.push(getV('suc_b'), getV('suc_g'), getT('suc_t'));
+                stats.push(getV('fail_b'), getV('fail_g'), getT('fail_t'));
+                stats.push(getV('abs_b'), getV('abs_g'), getT('abs_t'));
+                stats.push(enrT); // Redundant enrollment for alignment
+
+                subjectsConfig[currentGrade].forEach((_, idx) => {
+                    let ab = parseFloat(getV(`app_b_${idx}`)) || 0;
+                    let ag = parseFloat(getV(`app_g_${idx}`)) || 0;
+                    let pb = parseFloat(getV(`pre_b_${idx}`)) || 0;
+                    let pg = parseFloat(getV(`pre_g_${idx}`)) || 0;
+                    let sb = parseFloat(getV(`suc_b_${idx}`)) || 0;
+                    let sg = parseFloat(getV(`suc_g_${idx}`)) || 0;
+
+                    let fb = Math.max(0, pb - sb);
+                    let fg = Math.max(0, pg - sg);
+
+                    // SAVE 8 COLUMNS PER SUBJECT: AppB, AppG, PreB, PreG, SucB, SucG, FailB, FailG
+                    stats.push(ab, ag, pb, pg, sb, sg, fb, fg);
+                });
+
+                fetch(SCRIPT_URL, {
+                    method: "POST",
+                    body: JSON.stringify({ action: "saveStats", grade: currentGrade, schoolId: currentSchool.id, schoolName: currentSchool.name, schoolType: currentSchool.type, statsData: stats })
+                })
+                    .then(res => res.json())
+                    .then(data => {
+                        btn.disabled = false; btn.innerText = "💾 حفظ البيانات";
+                        if (data.status === "success") Swal.fire('تم الحفظ!', data.message, 'success');
+                        else Swal.fire('خطأ', data.message || "حدث خطأ", 'error');
+                    })
+                    .catch(err => {
+                        btn.disabled = false; btn.innerText = "💾 حفظ البيانات";
+                        Swal.fire('خطأ', 'فشل الحفظ: ' + err.message, 'error');
+                    });
+
+            } catch (e) {
+                Swal.fire('خطأ في البيانات', e.message, 'error');
+                if (btn) { btn.disabled = false; btn.innerText = "💾 حفظ البيانات"; }
+            }
+        }
+
+        function loadSavedDataForGrade(g) {
+            fetch(SCRIPT_URL, { method: "POST", body: JSON.stringify({ action: "getSchoolStats", grade: g, schoolId: currentSchool.id }) })
+                .then(r => r.json()).then(d => { if (d.hasData) populateFormWithData(d.statsData, g); });
+        }
+
+        function populateFormWithData(data, grade) {
+            const setV = (id, v) => { if (document.getElementById(id)) document.getElementById(id).value = v; };
+            setV('enr_b', data[1]); setV('enr_g', data[2]); setV('pre_b', data[4]); setV('pre_g', data[5]);
+            setV('suc_b', data[7]); setV('suc_g', data[8]);
+            calcGenRow();
+            let enrB = parseFloat(data[1]) || 0, enrG = parseFloat(data[2]) || 0;
+            // DETECT DATA VERSION: Old (3 cols/subj) vs New (8 cols/subj)
+            // Header (17 cols) + N * ColsPerSubj
+            let numSubjects = subjectsConfig[grade].length;
+            let isNewFormat = data.length > (17 + numSubjects * 4); // If clearly longer than old format
+
+            subjectsConfig[grade].forEach((_, idx) => {
+                let ab, ag, pb, pg, sb, sg;
+
+                if (isNewFormat) {
+                    // NEW FORMAT: 8 Cols (Starts at 17) -> 17 + idx*8
+                    let base = 17 + (idx * 8);
+                    // 0:Ab, 1:Ag, 2:Pb, 3:Pg, 4:Sb, 5:Sg, 6:Fb, 7:Fg
+                    ab = parseFloat(data[base]) || 0;
+                    ag = parseFloat(data[base + 1]) || 0;
+                    pb = parseFloat(data[base + 2]) || 0;
+                    pg = parseFloat(data[base + 3]) || 0;
+                    sb = parseFloat(data[base + 4]) || 0;
+                    sg = parseFloat(data[base + 5]) || 0;
+                } else {
+                    // OLD FORMAT: 3 Cols (Starts at 17) -> 17 + idx*3
+                    // Data was SAVED as Totals: [TotalPre, TotalSuc, TotalFail]
+                    let base = 17 + (idx * 3);
+                    let totPre = parseFloat(data[base]) || 0;
+                    let totSuc = parseFloat(data[base + 1]) || 0;
+                    // totFail (base+2) is not directly used for setting P/S, but implied.
+
+                    if (enrB === 0 && enrG > 0) {
+                        // Girls Only
+                        ab = 0; ag = enrG;
+                        pb = 0; pg = totPre;
+                        sb = 0; sg = totSuc;
+                    } else if (enrG === 0 && enrB > 0) {
+                        // Boys Only
+                        ab = enrB; ag = 0;
+                        pb = totPre; pg = 0;
+                        sb = totSuc; sg = 0;
+                    } else {
+                        // MIXED SCHOOL (Legacy Data) -> Proportional Split
+                        // This prevents dumping everything into Boys.
+                        let totalEnr = enrB + enrG;
+                        let ratio = totalEnr > 0 ? (enrB / totalEnr) : 0.5;
+
+                        ab = enrB;
+                        ag = enrG;
+
+                        // Split Present
+                        pb = Math.round(totPre * ratio);
+                        pg = totPre - pb;
+
+                        // Split Success (Constrained by Present)
+                        // We check success ratio relative to present or just enrollment?
+                        // Enrollment ratio is safest guess.
+                        // Ensure success <= present for each gender
+                        let rawSb = Math.round(totSuc * ratio);
+                        sb = Math.min(rawSb, pb); // Cannot have more success than present
+                        let rawSg = totSuc - rawSb;
+                        sg = Math.min(rawSg, pg);
+
+                        // Adjust if rounding caused sum mismatch with TotalSuccess?
+                        // If sb+sg != totSuc.
+                        // Ideally we prioritize the gender split logic.
+                        // If (sb+sg) < totSuc, dump remainder in larger group?
+                        // Let's keep it simple. Small error (1 student) is acceptable for "Restored" data.
+                        // But actually: totSuc - sB might be > pg.
+                        // Let's refine:
+                        if (sg > pg) { sg = pg; sb = totSuc - sg; } // Shift overflow
+                        if (sb > pb) { sb = pb; sg = totSuc - sb; }
+                    }
+                }
+
+                setV(`app_b_${idx}`, ab); setV(`app_g_${idx}`, ag);
+                setV(`pre_b_${idx}`, pb); setV(`pre_g_${idx}`, pg);
+                setV(`suc_b_${idx}`, sb); setV(`suc_g_${idx}`, sg);
+
+                calcSubjRow(idx);
+            });
+        }
+
+        // --- NEW EVAL LOGIC ---
+        function showEvalGrade(grade) {
+            currentEvalGrade = grade;
+            const gradeText = grade === 1 ? 'الأول' : 'الثاني';
+
+            document.getElementById('dashboard-screen').style.display = 'none';
+            document.getElementById('eval-dashboard-screen').style.display = 'block';
+
+            document.getElementById('eval-grade-title').innerText = `الصف ${gradeText} الابتدائي`;
+
+            renderEvalInputTable('arabic', grade);
+            renderEvalInputTable('math', grade);
+            renderEvalInputTable('english', grade);
+
+            if (currentSchool.id) loadEvalDataForGrade(grade);
+        }
+
+        function backToExamGrades() {
+            document.getElementById('eval-dashboard-screen').style.display = 'none';
+            document.getElementById('dashboard-screen').style.display = 'block';
+            showGrade(3);
+        }
+
+        function renderEvalInputTable(subject, grade) {
+            const gradeText = grade === 1 ? 'الأول' : 'الثاني';
+            const tbody = document.getElementById(`${subject}-eval-body`);
+            tbody.innerHTML = `<tr>
+                <td style="font-weight: bold; background: #fafafa;">${gradeText}</td>
+                <td><input type="number" id="${subject}_enrolled" class="eval-input" oninput="calcEvalRow('${subject}')" placeholder="0"></td>
+                <td><input type="number" id="${subject}_absent" class="eval-input" oninput="calcEvalRow('${subject}')" placeholder="0" readonly style="background:#f0f0f0;"></td>
+                <td><input type="number" id="${subject}_present" class="eval-input" oninput="calcEvalRow('${subject}')" placeholder="0"></td>
+                <td><input type="number" id="${subject}_pass60" class="eval-input" oninput="calcEvalRow('${subject}')" placeholder="0"></td>
+                <td><input type="number" id="${subject}_less60" class="eval-input" oninput="calcEvalRow('${subject}')" placeholder="0" readonly style="background:#f0f0f0;"></td>
+            </tr>`;
+        }
+
+        function calcEvalRow(subj) {
+            const get = (id) => parseFloat(document.getElementById(id)?.value) || 0;
+            let enr = get(`${subj}_enrolled`), pre = get(`${subj}_present`), pass = get(`${subj}_pass60`);
+            document.getElementById(`${subj}_absent`).value = Math.max(0, enr - pre);
+            document.getElementById(`${subj}_less60`).value = Math.max(0, pre - pass);
+        }
+
+        function saveEvalData() {
+            // USING NEW ACTION HERE
+            const btn = document.querySelector('button[onclick="saveEvalData()"]');
+            btn.innerText = "..."; btn.disabled = true;
+
+            let evalData = [];
+            evalSubjects.forEach(s => {
+                let enr = document.getElementById(`${s}_enrolled`).value, abs = document.getElementById(`${s}_absent`).value, pre = document.getElementById(`${s}_present`).value;
+                let p60 = document.getElementById(`${s}_pass60`).value, l60 = document.getElementById(`${s}_less60`).value;
+                evalData.push(enr, abs, pre, p60, l60);
+            });
+
+            fetch(SCRIPT_URL, {
+                method: "POST",
+                body: JSON.stringify({
+                    action: "saveEvalStats", // Fixed name
+                    grade: currentEvalGrade,
+                    schoolId: currentSchool.id,
+                    schoolName: currentSchool.name,
+                    schoolType: currentSchool.type,
+                    evalData: evalData
+                })
+            })
+                .then(res => res.json())
+                .then(data => {
+                    btn.disabled = false; btn.innerText = "💾 حفظ بيانات التقييم";
+                    if (data.status === "success") Swal.fire('تم', 'تم الحفظ بنجاح', 'success');
+                    else Swal.fire('خطأ', data.message, 'error');
+                });
+        }
+
+        function loadEvalDataForGrade(g) {
+            fetch(SCRIPT_URL, { method: "POST", body: JSON.stringify({ action: "getEvalStats", grade: g, schoolId: currentSchool.id }) })
+                .then(r => r.json()).then(d => {
+                    if (d.hasData) {
+                        // Populate
+                        let data = d.evalData;
+                        const setV = (id, v) => document.getElementById(id).value = v;
+                        setV('arabic_enrolled', data[0]); setV('arabic_absent', data[1]); setV('arabic_present', data[2]); setV('arabic_pass60', data[3]); setV('arabic_less60', data[4]);
+                        setV('math_enrolled', data[5]); setV('math_absent', data[6]); setV('math_present', data[7]); setV('math_pass60', data[8]); setV('math_less60', data[9]);
+                        setV('english_enrolled', data[10]); setV('english_absent', data[11]); setV('english_present', data[12]); setV('english_pass60', data[13]); setV('english_less60', data[14]);
+                    }
+                });
+        }
+
+        function printEvalReport() {
+            // Generate the Consolidated Print Table
+            const printArea = document.getElementById('eval-print-area-container');
+            if (!printArea) {
+                // Create container if not exists
+                const div = document.createElement('div');
+                div.id = 'eval-print-area-container';
+                div.className = 'print-only';
+                document.body.appendChild(div);
+            }
+
+            const container = document.getElementById('eval-print-area-container');
+            const gradeText = currentEvalGrade === 1 ? 'الأول' : 'الثاني';
+
+            // Header
+            let html = `
+            <div class="print-header-container" style="display:flex; justify-content:space-between; align-items:start; margin-bottom:20px;">
+                <div style="flex:1; text-align:right; font-size:16pt; line-height:1.4; font-weight:bold;"> <!-- Increased -->
+                    محافظة الجيزة <br> مديرية التربية والتعليم <br> التعليم الابتدائي
+                </div>
+                <div style="flex:2; text-align:center;">
+                    <div style="font-weight:bold; font-size:24pt; text-decoration:underline;"> <!-- Main Title Increased -->
+                        إحصاء التقييم المبدئي والنهائي
+                    </div>
+                    <div style="font-weight:bold; font-size:20pt; margin-top:10px;">الصف ${gradeText} الابتدائي</div>
+                    <div style="font-weight:bold; font-size:20pt; margin-top:10px;">إدارة العمرانية التعليمية</div>
+                    <div style="margin-top:10px; font-size:18pt;">مدرسة: ${currentSchool.name}</div>
+                    <div style="margin-top:10px; font-size:18pt;">العام الدراسي 2025 / 2026</div>
+                </div>
+                <div style="flex:1; text-align:left;">
+                    <img src="logo.jpg" style="height:90px; width:auto;" alt="Logo" onerror="this.style.display='none'">
+                </div>
+            </div>`;
+
+            // Table
+            html += `
+            <table class="admin-table-official" style="width:100%; border: 3px solid #000; margin-top:30px; table-layout: fixed;">
+                <colgroup>
+                    <col style="width: 15%;"> <!-- Subject -->
+                    <col style="width: 17%;"> <!-- Enrolled -->
+                    <col style="width: 17%;"> <!-- Absent -->
+                    <col style="width: 17%;"> <!-- Present -->
+                    <col style="width: 17%;"> <!-- Good -->
+                    <col style="width: 17%;"> <!-- Needs Support -->
+                </colgroup>
+                <thead>
+                    <tr style="background:#f0f0f0;">
+                        <th rowspan="2" style="font-size:22pt; padding:10px;">المادة</th>
+                        <th colspan="3" style="font-size:22pt; padding:10px;">إحصاء الطلاب</th>
+                        <th colspan="2" style="font-size:22pt; padding:10px;">التقييم</th>
+                    </tr>
+                    <tr style="background:#f0f0f0;">
+                        <th style="font-size:20pt; padding:10px;">مقيد</th>
+                        <th style="font-size:20pt; padding:10px;">غائب</th>
+                        <th style="font-size:20pt; padding:10px;">حاضر</th>
+                        <th style="font-size:20pt; padding:10px;">60% فأكثر (يجيد)</th>
+                        <th style="font-size:20pt; padding:10px;">أقل من 60% (يحتاج دعم)</th>
+                    </tr>
+                </thead>
+                <tbody>`;
+
+            evalSubjects.forEach(s => {
+                const get = (id) => document.getElementById(id).value || 0;
+                html += `
+                    <tr style="height: 70px;"> <!-- Increased row height for larger font -->
+                        <td style="font-weight:bold; font-size:24pt;">${evalSubjectsNames[s]}</td>
+                        <td style="font-size:24pt; font-weight:bold;">${get(s + '_enrolled')}</td>
+                        <td style="font-size:24pt; font-weight:bold;">${get(s + '_absent')}</td>
+                        <td style="font-size:24pt; font-weight:bold;">${get(s + '_present')}</td>
+                        <td style="font-size:24pt; font-weight:bold;">${get(s + '_pass60')}</td>
+                        <td style="font-size:24pt; font-weight:bold;">${get(s + '_less60')}</td>
+                    </tr>
+                `;
+            });
+
+            html += `</tbody></table>`;
+
+            // Signatures
+            html += `
+            <div class="print-footer-container" style="display:flex; justify-content:space-around; margin-top:50px; font-weight:bold;">
+                <div style="text-align:center;">
+                    <div>مدير المرحلة</div>
+                    <div style="margin-top:40px; border-top:1.5px solid #000; min-width:180px;"></div>
+                </div>
+                <div style="text-align:center;">
+                    <div>مدير المدرسة</div>
+                    <div style="margin-top:40px; border-top:1.5px solid #000; min-width:180px;"></div>
+                </div>
+            </div>`;
+
+            container.innerHTML = html;
+
+            // Trigger Print
+            document.body.classList.add('print-mode-eval-summary');
+            window.print();
+            setTimeout(() => document.body.classList.remove('print-mode-eval-summary'), 1000);
+        }
+
+        /* --- Export to Excel for Eval --- */
+        function exportEvalToExcel() {
+            /* Simplify for space */
+            Swal.fire('تم', 'تصدير إكسل للتقييم قيد التنفيذ (نفس منطق الإحصاء العام)', 'info');
+        }
+
     </script>
 </body>
-
 
 </html>

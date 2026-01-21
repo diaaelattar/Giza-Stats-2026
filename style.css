@@ -326,6 +326,62 @@ th {
     font-weight: 700;
 }
 
+/* Sticky First Column for Context */
+@media screen and (max-width: 768px) {
+
+    th:first-child,
+    td:first-child {
+        position: sticky;
+        right: 0;
+        /* Since it's RTL */
+        background-color: #f8f9fa !important;
+        z-index: 2;
+        box-shadow: -2px 0 5px rgba(0, 0, 0, 0.1);
+        font-weight: bold;
+    }
+}
+
+/* Mobile Scroll Hint */
+.scroll-hint {
+    display: none;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    background: #fff3cd;
+    color: #856404;
+    padding: 8px;
+    border-radius: 8px;
+    margin-bottom: 10px;
+    font-size: 0.85rem;
+    font-weight: bold;
+    border: 1px solid #ffeeba;
+}
+
+@media screen and (max-width: 768px) {
+    .scroll-hint {
+        display: flex;
+    }
+}
+
+.swipe-icon {
+    animation: swipe 1.5s ease-in-out infinite;
+    font-size: 1.2rem;
+}
+
+@keyframes swipe {
+    0% {
+        transform: translateX(0);
+    }
+
+    50% {
+        transform: translateX(15px);
+    }
+
+    100% {
+        transform: translateX(0);
+    }
+}
+
 /* Inputs inside tables */
 .sub-input {
     width: 90%;
@@ -673,9 +729,32 @@ input::-webkit-inner-spin-button {
         gap: 15px;
     }
 
+    /* School Status Lists - Mobile Optimization */
+    .status-card {
+        width: 100% !important;
+        margin-bottom: 15px !important;
+    }
+
     #list-submitted,
     #list-missing {
-        max-height: 250px !important;
+        max-height: 400px !important;
+        overflow-y: auto !important;
+        -webkit-overflow-scrolling: touch;
+        padding: 10px !important;
+    }
+
+    #list-submitted li,
+    #list-missing li {
+        padding: 10px 5px !important;
+        font-size: 15px !important;
+        line-height: 1.6 !important;
+        border-bottom: 1px solid #e0e0e0;
+    }
+
+    #count-submitted,
+    #count-missing {
+        font-size: 18px !important;
+        font-weight: bold !important;
     }
 
     h3 {
@@ -747,127 +826,454 @@ input::-webkit-inner-spin-button {
     }
 }
 
-/* --- Strict Print Logic (Universal) --- */
+/* ======================================================== */
+/* ============= PRINT STYLES - CONSOLIDATED ============== */
+/* ======================================================== */
+
 @media print {
+
+    /* ========== PAGE SETUP ========== */
     @page {
         size: A4 landscape;
-        margin: 5mm;
+        margin: 3mm;
     }
 
+    /* ========== BODY AND GLOBAL SETTINGS ========== */
     body {
         margin: 0;
         padding: 0;
-        background: white;
-        font-family: 'Times New Roman', serif;
+        background: white !important;
+        font-family: 'Times New Roman', 'Tajawal', serif;
         color: #000 !important;
-        -webkit-print-color-adjust: exact;
-        print-color-adjust: exact;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
         width: 100%;
         height: 100%;
         overflow: visible;
+        direction: rtl;
     }
 
-    /* 1. NUCLEAR OPTION: Hide EVERYTHING at the root level */
-    body>* {
+    /* ========== HIDE UI ELEMENTS ========== */
+    .control-panel,
+    .tabs,
+    .tab-btn,
+    .action-btn,
+    button,
+    #login-screen,
+    .scroll-hint,
+    .copyright-footer,
+    .login-container {
         display: none !important;
     }
 
-    /* 2. REVEAL ONLY the Print Area */
-    body>#school-print-area {
-        display: block !important;
-        position: relative !important;
-        top: auto;
-        left: auto;
-        width: 100% !important;
-        height: auto !important;
-        margin: 0 !important;
-        padding: 0 !important;
-        visibility: visible !important;
-        zoom: 90%;
-        /* Scale down slightly to ensure fit */
+    /* ========== SCREEN VISIBILITY CONTROL ========== */
+    /* Removed redundant always-visible screens block to rely on specific .print-mode rules */
+
+    /* Hide elements marked as no-print */
+    @media screen {
+        .no-print {
+            display: none !important;
+        }
     }
 
-    /* Ensure children of print area are visible */
+    /* ========== SCREEN VISIBILITY CONTROL ========== */
+    /* Hide all screens by default */
+    /* Screens are always visible in print mode */
+
+    /* Show specific screens based on print mode class */
+    .print-mode-admin #admin-dashboard-screen {
+        display: block !important;
+    }
+
+    .print-mode-official #school-print-area {
+        display: block !important;
+    }
+
+    .print-mode-eval #eval-dashboard-screen {
+        display: block !important;
+    }
+
+    /* STRICT HIDING */
+    .print-mode-official #eval-dashboard-screen,
+    .print-mode-official #admin-dashboard-screen,
+    .print-mode-official #dashboard-screen,
+    .print-mode-official #eval-print-area-container {
+        display: none !important;
+    }
+
+    .print-mode-eval #school-print-area,
+    .print-mode-eval #admin-dashboard-screen,
+    .print-mode-eval #dashboard-screen,
+    .print-mode-eval #eval-print-area-container {
+        display: none !important;
+    }
+
+    /* Print Summary Mode (New Professional Table) */
+    .print-mode-eval-summary #eval-print-area-container {
+        display: block !important;
+        width: 100% !important;
+        margin: 0 !important;
+    }
+
+    .print-mode-eval-summary #school-print-area,
+    .print-mode-eval-summary #admin-dashboard-screen,
+    .print-mode-eval-summary #dashboard-screen,
+    .print-mode-eval-summary #eval-dashboard-screen {
+        display: none !important;
+    }
+
+    .print-mode-admin #school-print-area,
+    .print-mode-admin #eval-dashboard-screen,
+    .print-mode-admin #dashboard-screen,
+    .print-mode-admin #eval-print-area-container {
+        display: none !important;
+    }
+
+    /* ========== PRINT HEADERS AND FOOTERS ========== */
+    .print-header-container,
+    .print-footer-container {
+        display: flex !important;
+        page-break-inside: avoid;
+    }
+
+    /* ========== TABLE STYLES - UNIVERSAL ========== */
+    table {
+        width: 100% !important;
+        border-collapse: collapse !important;
+        border: 2px solid #000 !important;
+        table-layout: fixed !important;
+        font-size: 9pt !important;
+        page-break-inside: auto;
+        margin-top: 3px;
+        margin-bottom: 3px;
+    }
+
+    tr {
+        page-break-inside: avoid;
+        page-break-after: auto;
+    }
+
+    th,
+    td {
+        border: 1px solid #000 !important;
+        padding: 4px 2px !important;
+        text-align: center !important;
+        vertical-align: middle !important;
+        color: #000 !important;
+        font-size: 9pt !important;
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+    }
+
+    th {
+        background-color: #f0f0f0 !important;
+        font-weight: bold !important;
+        line-height: 1.1;
+        font-size: 8pt !important;
+    }
+
+    /* ========== COLUMN WIDTH STANDARDIZATION ========== */
+    /* First Column: Labels/Description */
+    table th:first-child,
+    table td:first-child {
+        width: 100px !important;
+        min-width: 100px !important;
+        max-width: 100px !important;
+        text-align: right !important;
+        padding-right: 4px !important;
+        white-space: normal;
+        font-weight: bold;
+        font-size: 8pt !important;
+    }
+
+    /* Second Column: School Count (if applicable) */
+    table th:nth-child(2),
+    table td:nth-child(2) {
+        width: 35px !important;
+        min-width: 35px !important;
+        max-width: 35px !important;
+    }
+
+    /* Numeric Columns: All remaining columns */
+    table th:nth-child(n+3),
+    table td:nth-child(n+3) {
+        width: 32px !important;
+        min-width: 32px !important;
+        max-width: 32px !important;
+        white-space: nowrap !important;
+    }
+
+    /* ========== SCHOOL PRINT AREA SPECIFIC ========== */
     #school-print-area * {
         visibility: visible !important;
-        display: block;
-        /* Default to block for most elements */
     }
 
-    /* Restore Flex layouts inside print area */
     #school-print-area .print-header-container,
-    #school-print-area div[style*="display:flex"] {
+    #school-print-area div[style*="display:flex"],
+    #school-print-area div[style*="display: flex"] {
         display: flex !important;
     }
 
-    /* Restore Table Structure */
     #school-print-area table {
         display: table !important;
-        width: 100% !important;
-        border-collapse: collapse;
-        border: 2px solid #000;
-        table-layout: auto;
-        /* Dynamic layout is safer */
+        page-break-inside: auto;
     }
 
     #school-print-area tr {
         display: table-row !important;
+        page-break-inside: avoid;
     }
 
     #school-print-area th,
     #school-print-area td {
         display: table-cell !important;
-        border: 1px solid #000;
-        padding: 6px 2px;
+    }
+
+    /* ========== ADMIN TABLE SPECIFIC ========== */
+    /* Wrapper for each "Form" or "Sheet" */
+    .admin-sheet-container {
+        display: block !important;
+        /* Removed forced page break to allow vertical stacking */
+        page-break-after: auto !important;
+        width: 100% !important;
+        border: none !important;
+        box-shadow: none !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        margin-bottom: 20px !important;
+        /* Add space between tables */
+    }
+
+    /* Remove page break from the last container */
+    .admin-sheet-container:last-child {
+        page-break-after: auto !important;
+        margin-bottom: 0 !important;
+    }
+
+    .admin-table-official {
+        border: 2px solid #000 !important;
+        width: 99% !important;
+        /* Slight reduction to avoid border clipping */
+        margin: 0 auto !important;
+    }
+
+    .admin-table-official th,
+    .admin-table-official td {
+        border: 1px solid #000 !important;
+        padding: 4px 2px !important;
+        font-size: 8pt !important;
+        /* Smaller text to fit */
+    }
+
+    /* ========== INPUT FIELDS IN PRINT ========== */
+    input,
+    .sub-input,
+    .eval-input {
+        border: none !important;
+        background: transparent !important;
+        font-weight: bold !important;
         text-align: center !important;
-        vertical-align: middle;
-        font-size: 10pt;
         color: #000 !important;
-        overflow: visible;
-        /* Don't hide overflow */
-        word-break: break-word;
+        box-shadow: none !important;
+        width: auto !important;
     }
 
-    #school-print-area th {
-        background-color: #f0f0f0 !important;
-        font-weight: bold;
-        line-height: 1.1;
+    /* Remove input spinners in print */
+    input::-webkit-outer-spin-button,
+    input::-webkit-inner-spin-button {
+        display: none;
     }
 
-    /* Column Widths */
-    /* Labels Col */
-    #school-print-area table th:first-child,
-    #school-print-area table td:first-child {
-        width: 180px !important;
-        /* Fixed width for labels */
-        min-width: 180px !important;
-        text-align: right !important;
-        padding-right: 8px;
-        white-space: normal;
+    /* ========== EVALUATION TABLES ========== */
+    .eval-subject-card {
+        page-break-inside: avoid;
+        margin-bottom: 20px;
+        box-shadow: none !important;
+        border: 1px solid #000 !important;
     }
 
-    /* Small Col (School Count) */
-    #school-print-area table th:nth-child(2),
-    #school-print-area table td:nth-child(2) {
-        width: 40px !important;
-        min-width: 40px !important;
+    .eval-table {
+        border: 2px solid #000 !important;
     }
 
-    /* Numeric Cols */
-    #school-print-area table th:nth-child(n+3),
-    #school-print-area table td:nth-child(n+3) {
-        min-width: 28px !important;
-        /* Ensure digits fit */
-        font-size: 10pt !important;
-        white-space: nowrap !important;
+    .eval-table th,
+    .eval-table td {
+        border: 1px solid #000 !important;
+        font-size: 11pt !important;
+        padding: 6px 4px !important;
     }
 
-    /* Clear numbers */
+    /* ========== LOGO ========== */
+    .logo-img,
+    img[src*="logo"] {
+        width: 70px !important;
+        height: auto !important;
+        max-height: 70px !important;
+    }
+
+    /* ========== CONTAINERS ========== */
+    .container,
+    .wrapper,
+    .table-container,
+    .admin-sheet-container {
+        width: 100% !important;
+        max-width: none !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        box-shadow: none !important;
+        border: none !important;
+        background: transparent !important;
+    }
 }
+
 
 /* Logos */
 .logo-img {
     width: 70px !important;
     height: auto;
 }
+
+/* ======== CSS للتقييم المبدئي والنهائي (الصف 1 و 2) ======== */
+#eval-dashboard-screen {
+    display: none;
+    padding: 20px;
+    flex: 1;
+    max-width: 1200px;
+    margin: 0 auto;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+/* بطاقة كل مادة */
+.eval-subject-card {
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+    margin-bottom: 20px;
+    overflow: hidden;
+    border: 1px solid #e0e0e0;
+}
+
+/* جدول التقييم */
+.eval-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+}
+
+.eval-table th,
+.eval-table td {
+    border: 1px solid #ddd;
+    padding: 10px 8px;
+    text-align: center;
+}
+
+.eval-table th {
+    background-color: #f8f9fa;
+    font-weight: bold;
+    color: #333;
+}
+
+/* حقول الإدخال للتقييم */
+.eval-input {
+    width: 100%;
+    max-width: 100px;
+    padding: 8px;
+    text-align: center;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 14px;
+    font-family: 'Tajawal', sans-serif;
+}
+
+.eval-input:focus {
+    border-color: #9b59b6;
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(155, 89, 182, 0.1);
+}
+
+/* تبويبات التقييم */
+.eval-tab {
+    background: #9b59b6 !important;
+    color: white !important;
+    border-color: #9b59b6 !important;
+}
+
+.eval-tab.active {
+    background: linear-gradient(135deg, #9b59b6 0%, #8e44ad 100%) !important;
+    box-shadow: 0 4px 10px rgba(155, 89, 182, 0.3) !important;
+}
+
+/* في شاشة التقييم: إظهار Header and Footer الطباعة */
+#eval-dashboard-screen .print-header-container,
+#eval-dashboard-screen .print-footer-container {
+    display: flex !important;
+}
+
+/* Print Overrides for Eval Mode */
+@media print {
+
+    /* Compact the cards */
+    .eval-subject-card {
+        margin-bottom: 5px !important;
+        padding: 5px !important;
+        border: 1px solid #000 !important;
+        box-shadow: none !important;
+    }
+
+    /* Smaller subject headers */
+    .subject-header {
+        font-size: 1rem !important;
+        margin: 0 !important;
+        padding: 2px !important;
+        border: none !important;
+        text-align: right;
+        text-decoration: underline;
+    }
+
+    /* Compact Table */
+    .eval-table {
+        margin-top: 2px !important;
+        font-size: 10.5pt !important;
+        /* Slightly larger as requested */
+    }
+
+    .eval-table th,
+    .eval-table td {
+        padding: 4px !important;
+    }
+
+    /* Hide the 'Input Eval Data' title */
+    #eval-form-title {
+        display: none !important;
+    }
+
+    /* Ensure wrapper doesn't break */
+    #eval-dashboard-screen {
+        display: block !important;
+        overflow: visible !important;
+        height: auto !important;
+    }
+}
+
+@media screen and (max-width: 768px) {
+    .eval-subject-card {
+        margin-bottom: 15px;
+    }
+
+    .eval-table {
+        font-size: 12px;
+    }
+
+    .eval-table th,
+    .eval-table td {
+        padding: 8px 4px;
+    }
+
+    .eval-input {
+        max-width: 70px;
+        padding: 6px;
+        font-size: 13px;
+    }
 }
